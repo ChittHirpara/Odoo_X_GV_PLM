@@ -1,5 +1,7 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth');
+const cache = require('../utils/cache');
+const dbHealth = require('../utils/dbHealth');
 const roleMiddleware = require('../middleware/roles');
 
 const router = express.Router();
@@ -30,6 +32,11 @@ router.get('/', authMiddleware, async (req, res) => {
 
     const result = await req.db(sql, params);
 
+    // Update cache on success
+    if (page === 1 && !req.query.search) {
+      cache.set('boms_all', { rows: result.rows, total });
+    }
+
     res.json({ 
       success: true, 
       data: result.rows,
@@ -38,6 +45,19 @@ router.get('/', authMiddleware, async (req, res) => {
       totalPages: Math.ceil(total / limit) || 1
     });
   } catch (error) {
+    // Fallback
+    if (!dbHealth.getStatus()) {
+      const cached = cache.get('boms_all');
+      if (cached) {
+        return res.json({
+          success: true,
+          data: cached.rows,
+          total: cached.total,
+          fallback: true,
+          message: 'Serving cached BoM data due to database connection issue'
+        });
+      }
+    }
     console.error('[BOMS PROB]', error);
     res.status(500).json({ success: false, message: 'Failed to fetch BOMs' });
   }

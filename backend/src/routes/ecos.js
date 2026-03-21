@@ -2,6 +2,8 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const authMiddleware = require('../middleware/auth');
 const roleMiddleware = require('../middleware/roles');
+const cache = require('../utils/cache');
+const dbHealth = require('../utils/dbHealth');
 
 const router = express.Router();
 
@@ -47,6 +49,11 @@ router.get('/', authMiddleware, async (req, res) => {
 
     const result = await req.db(sql, params);
 
+    // Update cache on success
+    if (page === 1 && !req.query.search && !req.query.stage) {
+      cache.set('ecos_all', { rows: result.rows, total });
+    }
+
     res.json({ 
       success: true, 
       data: result.rows,
@@ -55,6 +62,19 @@ router.get('/', authMiddleware, async (req, res) => {
       totalPages: Math.ceil(total / limit) || 1
     });
   } catch (error) {
+    // Fallback
+    if (!dbHealth.getStatus()) {
+      const cached = cache.get('ecos_all');
+      if (cached) {
+        return res.json({
+          success: true,
+          data: cached.rows,
+          total: cached.total,
+          fallback: true,
+          message: 'Serving cached ECO data due to database connection issue'
+        });
+      }
+    }
     console.error('[ECOS LIST PROB]', error);
     res.status(500).json({ success: false, message: 'Failed to fetch ECOs' });
   }

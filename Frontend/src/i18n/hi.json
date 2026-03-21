@@ -204,7 +204,7 @@
   "db_status": {
     "title": "डेटाबेस स्थिति",
     "syncing": "सिंक हो रहा है...",
-    "mongo_backup": "MongoDB बैकअप",
+    "mongo_backup": "सुपाबेस क्लाउड (Supabase)",
     "primary": "प्राथमिक",
     "backup": "बैकअप",
     "failover_stats": "फेलओवर आंकड़े",

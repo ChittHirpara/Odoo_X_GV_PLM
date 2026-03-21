@@ -28,6 +28,8 @@ const dbStatusRoute = require('./src/routes/dbStatus');
 const generateRoute = require('./src/routes/generate');
 const riskRoute = require('./src/routes/risk');
 const { startSLAMonitor } = require('./src/services/slaService');
+const { startHealthCheck } = require('./src/utils/dbHealth');
+const readOnlyMiddleware = require('./src/middleware/readOnly');
 
 const app = express();
 
@@ -42,6 +44,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(dbMiddleware);
+app.use(readOnlyMiddleware); // Global read-only protection
 
 app.use((req, res, next) => {
   console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
@@ -100,6 +103,7 @@ if (require.main === module) {
     try {
       await initDatabases();
       startSLAMonitor();
+      startHealthCheck(15000); // Check DB every 15s
       app.listen(PORT, () => {
         console.log(`\n[SERVER] PLM Flow running on http://localhost:${PORT}`);
         console.log(`[SERVER] CORS enabled for localhost:5173/5174`);

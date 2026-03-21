@@ -61,102 +61,49 @@ export default function DBStatusBadge() {
           {isSyncing
             ? t('db_status.syncing', 'Syncing...')
             : isNormal
-            ? 'PostgreSQL'
-            : t('db_status.mongo_backup', 'MongoDB Backup')}
+            ? 'Supabase'
+            : 'Disconnected'}
         </span>
       </button>
 
       {/* Dropdown */}
       {expanded && (
-        <div className="absolute right-0 top-10 w-80 bg-white rounded-xl shadow-xl border border-surface-200 overflow-hidden z-50 animate-fade-in">
+        <div className="absolute right-0 top-10 w-64 bg-white rounded-xl shadow-xl border border-surface-200 overflow-hidden z-50 animate-fade-in">
           <div className="px-4 py-3 border-b border-surface-100 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Database size={14} className="text-surface-500" />
               <h3 className="text-sm font-semibold text-surface-800">{t('db_status.title', 'Database Status')}</h3>
             </div>
             <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${config.bg} ${config.text}`}>
-              {status.current === 'postgres' ? t('db_status.primary', 'Primary') : t('db_status.backup', 'Backup')}
+              {t('db_status.primary', 'Primary')}
             </span>
           </div>
 
           <div className="px-4 py-3 space-y-3">
             {/* Connection status */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className={`p-2.5 rounded-lg border ${status.postgres?.healthy ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400 mb-1">PostgreSQL</p>
-                <div className="flex items-center gap-1.5">
-                  {status.postgres?.healthy
-                    ? <CheckCircle size={12} className="text-emerald-500" />
-                    : <XCircle size={12} className="text-red-500" />}
-                  <span className={`text-xs font-semibold ${status.postgres?.healthy ? 'text-emerald-700' : 'text-red-700'}`}>
-                    {status.postgres?.healthy ? t('status.connected', 'Connected') : t('status.down', 'Down')}
-                  </span>
-                </div>
-              </div>
-              <div className={`p-2.5 rounded-lg border ${status.mongo?.healthy ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400 mb-1">MongoDB</p>
-                <div className="flex items-center gap-1.5">
-                  {status.mongo?.healthy
-                    ? <CheckCircle size={12} className="text-emerald-500" />
-                    : <XCircle size={12} className="text-red-500" />}
-                  <span className={`text-xs font-semibold ${status.mongo?.healthy ? 'text-emerald-700' : 'text-red-700'}`}>
-                    {status.mongo?.healthy ? t('status.connected', 'Connected') : t('status.down', 'Down')}
-                  </span>
-                </div>
+            <div className={`p-3 rounded-lg border ${status.postgres?.healthy ? 'bg-emerald-50 border-emerald-200' : 'bg-red-50 border-red-200'}`}>
+              <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400 mb-1">Supabase PostgreSQL</p>
+              <div className="flex items-center gap-1.5">
+                {status.postgres?.healthy
+                  ? <CheckCircle size={14} className="text-emerald-500" />
+                  : <XCircle size={14} className="text-red-500" />}
+                <span className={`text-sm font-semibold ${status.postgres?.healthy ? 'text-emerald-700' : 'text-red-700'}`}>
+                  {status.postgres?.healthy ? t('status.connected', 'Connected') : t('status.down', 'Down')}
+                </span>
               </div>
             </div>
 
-            {/* Stats (admin) */}
-            {status.stats && (
-              <div className="bg-surface-50 rounded-lg p-3 border border-surface-200">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400 mb-2">{t('db_status.failover_stats', 'Failover Statistics')}</p>
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-surface-500">{t('db_status.failovers', 'Failovers')}:</span>
-                    <span className="ml-1 font-semibold text-surface-800">{status.stats.failoverCount}</span>
-                  </div>
-                  <div>
-                    <span className="text-surface-500">{t('db_status.downtime', 'Downtime')}:</span>
-                    <span className="ml-1 font-semibold text-surface-800">
-                      {status.stats.totalDowntimeMs > 0
-                        ? `${Math.round(status.stats.totalDowntimeMs / 1000)}s`
-                        : '0s'}
-                    </span>
-                  </div>
-                  {status.stats.lastFailoverAt && (
-                    <div className="col-span-2">
-                      <span className="text-surface-500">{t('db_status.last_failover', 'Last failover')}:</span>
-                      <span className="ml-1 font-semibold text-surface-800">
-                        {new Date(status.stats.lastFailoverAt).toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
             {/* Status message */}
-            <p className="text-xs text-surface-600 font-medium">{status.message}</p>
-
-            {/* Recent sync logs */}
-            {logs.length > 0 && (
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-surface-400 mb-1.5">{t('db_status.recent_logs', 'Recent Sync Logs')}</p>
-                <div className="space-y-1 max-h-32 overflow-y-auto">
-                  {logs.slice(0, 5).map((log, i) => (
-                    <div key={i} className="flex items-center gap-2 text-[11px] text-surface-600 py-1 border-b border-surface-50">
-                      <Activity size={10} className="text-surface-400 flex-shrink-0" />
-                      <span className="font-mono">{log.direction}</span>
-                      <span>→</span>
-                      <span className="font-semibold">{log.records_synced ?? 0} {t('common.records', 'records')}</span>
-                      <span className={`ml-auto font-bold ${log.status === 'success' ? 'text-emerald-600' : 'text-red-600'}`}>
-                        {log.status}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            <p className="text-[11px] text-surface-500 italic text-center px-1">
+              {status.message}
+            </p>
+            
+            <button 
+              onClick={() => setExpanded(false)}
+              className="w-full py-2 text-[11px] font-bold text-surface-400 hover:text-surface-600 transition-colors border-t border-surface-50"
+            >
+              {t('actions.close', 'Close')}
+            </button>
           </div>
         </div>
       )}

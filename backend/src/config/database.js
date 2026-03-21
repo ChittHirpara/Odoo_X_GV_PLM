@@ -1,4 +1,5 @@
 const { Pool } = require('pg');
+const dbHealth = require('../utils/dbHealth');
 
 // ── State ─────────────────────────────────────────
 let pgPool = null;
@@ -39,13 +40,24 @@ async function initDatabases() {
  */
 async function query(text, params) {
   if (!pgPool) throw new Error('[DB] Pool not initialized');
-  return pgPool.query(text, params);
+  try {
+    const res = await pgPool.query(text, params);
+    return res;
+  } catch (err) {
+    // If query fails due to connection issues, flag as unhealthy
+    if (err.code === 'ECONNREFUSED' || err.code === 'ETIMEDOUT' || err.message.includes('terminated')) {
+      dbHealth.setHealthy(false);
+    }
+    throw err;
+  }
 }
 
 function getDBStatus() {
+  const healthy = dbHealth.getStatus();
   return {
-    postgres: { healthy: pgHealthy },
-    message: pgHealthy ? 'Connected to Supabase PostgreSQL' : 'Database connection error',
+    current: healthy ? 'postgres' : 'fallback',
+    postgres: { healthy: healthy },
+    message: healthy ? 'Connected to Supabase PostgreSQL' : 'System in READ-ONLY FALLBACK mode',
     timestamp: new Date()
   };
 }

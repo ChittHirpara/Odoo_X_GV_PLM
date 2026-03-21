@@ -204,7 +204,7 @@
   "db_status": {
     "title": "Database Status",
     "syncing": "Syncing...",
-    "mongo_backup": "MongoDB Backup",
+    "mongo_backup": "Supabase Cloud",
     "primary": "Primary",
     "backup": "Backup",
     "failover_stats": "Failover Statistics",
