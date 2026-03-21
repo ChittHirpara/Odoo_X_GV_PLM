@@ -4,71 +4,50 @@ const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-/**
- * GET /api/notifications
- * Returns ONLY the logged-in user's notifications
- * Filtered by userId from JWT
- */
+// GET /api/notifications — List all notifications
 router.get('/', authMiddleware, async (req, res) => {
-  console.log('[ROUTE] GET /api/notifications called');
-
   try {
-    const notifications = await Notification.find({ userId: req.user.id })
-      .populate('ecoId', 'title ecoNumber stage')
-      .sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      data: notifications
-    });
+    const notifications = await Notification.find().sort({ timestamp: -1 });
+    res.json({ success: true, data: notifications });
   } catch (error) {
-    console.error('[NOTIFICATIONS] List error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch notifications'
-    });
+    res.status(500).json({ success: false, message: 'Failed to fetch notifications' });
   }
 });
 
-/**
- * PATCH /api/notifications/:id/read
- * Marks notification as read
- */
+// PATCH /api/notifications/:id/read — Mark notification as read
 router.patch('/:id/read', authMiddleware, async (req, res) => {
-  console.log(`[ROUTE] PATCH /api/notifications/${req.params.id}/read called`);
-
   try {
-    const notification = await Notification.findById(req.params.id);
-
+    const notification = await Notification.findOne({ _id: req.params.id });
     if (!notification) {
-      return res.status(404).json({
-        success: false,
-        message: 'Notification not found'
-      });
-    }
-
-    // Ensure user can only mark their own notifications
-    if (notification.userId.toString() !== req.user.id.toString()) {
-      return res.status(403).json({
-        success: false,
-        message: 'You can only mark your own notifications as read'
-      });
+      return res.status(404).json({ success: false, message: 'Notification not found' });
     }
 
     notification.read = true;
     await notification.save();
 
-    res.json({
-      success: true,
-      data: notification
-    });
+    res.json({ success: true, data: notification });
   } catch (error) {
-    console.error('[NOTIFICATIONS] Mark read error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to mark notification as read'
+    res.status(500).json({ success: false, message: 'Failed to mark notification as read' });
+  }
+});
+
+// POST /api/notifications — Create notification
+router.post('/', authMiddleware, async (req, res) => {
+  try {
+    const { title, type, ecoId } = req.body;
+    const notification = await Notification.create({
+      id: `n${Date.now()}`,
+      title,
+      type: type || 'info',
+      ecoId: ecoId || null,
+      read: false,
+      timestamp: new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' })
     });
+    res.status(201).json({ success: true, data: notification });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to create notification' });
   }
 });
 
 module.exports = router;
+

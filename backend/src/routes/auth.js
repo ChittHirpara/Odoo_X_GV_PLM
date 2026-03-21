@@ -2,22 +2,16 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/auth');
 
 const router = express.Router();
 
-/**
- * POST /api/auth/login
- * Authenticate user and return JWT token
- * No auth required
- */
+// POST /api/auth/login
 router.post('/login', [
   body('email').isEmail().withMessage('Valid email is required'),
   body('password').notEmpty().withMessage('Password is required')
 ], async (req, res) => {
-  console.log('[ROUTE] POST /api/auth/login called');
-
   try {
-    // Validate request
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
@@ -27,8 +21,6 @@ router.post('/login', [
     }
 
     const { email, password } = req.body;
-
-    // Find user by email (include password for comparison)
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -38,7 +30,6 @@ router.post('/login', [
       });
     }
 
-    // Compare password
     const isMatch = await user.comparePassword(password);
 
     if (!isMatch) {
@@ -48,9 +39,9 @@ router.post('/login', [
       });
     }
 
-    // Generate JWT
     const payload = {
-      id: user._id,
+      id: user.id,
+      userId: user.id,
       name: user.name,
       role: user.role
     };
@@ -59,14 +50,12 @@ router.post('/login', [
       expiresIn: '24h'
     });
 
-    console.log(`[AUTH] User logged in: ${user.email} (${user.role})`);
-
     res.json({
       success: true,
       data: {
         token,
         user: {
-          id: user._id,
+          id: user.id,
           name: user.name,
           email: user.email,
           role: user.role,
@@ -75,7 +64,6 @@ router.post('/login', [
       }
     });
   } catch (error) {
-    console.error('[AUTH] Login error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Server error during authentication'
@@ -83,4 +71,27 @@ router.post('/login', [
   }
 });
 
+// GET /api/auth/me — Get current user from token
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.user.id });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+    res.json({
+      success: true,
+      data: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to get user profile' });
+  }
+});
+
 module.exports = router;
+

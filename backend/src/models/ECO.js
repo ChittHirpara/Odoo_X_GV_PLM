@@ -1,20 +1,38 @@
 const mongoose = require('mongoose');
 
 const changeSchema = new mongoose.Schema({
-  fieldName: { type: String },
+  field: { type: String },
   oldValue: { type: String },
   newValue: { type: String },
-  changeType: {
+  type: {
     type: String,
     enum: ['modified', 'added', 'removed'],
     default: 'modified'
   }
 }, { _id: false });
 
+const imageRefSchema = new mongoose.Schema({
+  id: { type: String },
+  name: { type: String },
+  url: { type: String },
+  category: { type: String }
+}, { _id: false });
+
+const attachedImageSchema = new mongoose.Schema({
+  id: { type: String },
+  name: { type: String },
+  url: { type: String },
+  category: { type: String },
+  uploadedAt: { type: String },
+  status: { type: String, default: 'pending' },
+  size: { type: Number },
+  type: { type: String }
+}, { _id: false });
+
 const approvalLogSchema = new mongoose.Schema({
-  userName: { type: String },
+  user: { type: String },
   action: { type: String },
-  timestamp: { type: Date, default: Date.now },
+  timestamp: { type: String },
   comment: { type: String }
 }, { _id: false });
 
@@ -22,18 +40,19 @@ const imageChangeSchema = new mongoose.Schema({
   id: { type: String },
   label: { type: String },
   changeType: { type: String },
-  oldImageUrl: { type: String },
-  newImageUrl: { type: String },
+  oldImage: { type: imageRefSchema, default: null },
+  newImage: { type: imageRefSchema, default: null },
   reviewStatus: {
     type: String,
     enum: ['approved', 'rejected', null],
     default: null
   },
-  reviewComment: { type: String },
-  reviewedBy: { type: String }
+  reviewComment: { type: String, default: null },
+  reviewedBy: { type: String, default: null }
 }, { _id: false });
 
 const ecoSchema = new mongoose.Schema({
+  _id: { type: String },
   title: {
     type: String,
     required: [true, 'ECO title is required'],
@@ -50,13 +69,15 @@ const ecoSchema = new mongoose.Schema({
     required: [true, 'ECO type is required']
   },
   productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    type: String,
     required: [true, 'Product reference is required']
   },
+  productName: {
+    type: String,
+    default: ''
+  },
   bomId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'BOM',
+    type: String,
     default: null
   },
   stage: {
@@ -70,11 +91,17 @@ const ecoSchema = new mongoose.Schema({
     default: 'Medium'
   },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User'
+    type: String
+  },
+  createdByName: {
+    type: String,
+    default: ''
+  },
+  createdAt: {
+    type: String
   },
   effectiveDate: {
-    type: Date,
+    type: String,
     default: null
   },
   versionUpdate: {
@@ -90,10 +117,18 @@ const ecoSchema = new mongoose.Schema({
     trim: true
   },
   changes: [changeSchema],
-  approvalLogs: [approvalLogSchema],
-  imageChanges: [imageChangeSchema]
+  attachedImages: [attachedImageSchema],
+  imageChanges: [imageChangeSchema],
+  approvalLogs: [approvalLogSchema]
 }, {
-  timestamps: true
+  _id: false,
+  timestamps: false,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+ecoSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 module.exports = mongoose.model('ECO', ecoSchema);

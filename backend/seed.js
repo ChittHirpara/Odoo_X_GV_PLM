@@ -3,391 +3,375 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Import models
 const User = require('./src/models/User');
 const Product = require('./src/models/Product');
 const BOM = require('./src/models/BOM');
 const ECO = require('./src/models/ECO');
 const Notification = require('./src/models/Notification');
+const ApprovalRule = require('./src/models/ApprovalRule');
+const Activity = require('./src/models/Activity');
+const Setting = require('./src/models/Setting');
 
 const seedDB = async () => {
   try {
-    console.log('\n🌱 Starting PLM Database Seed...\n');
+    console.log('\nStarting PLM Database Seed...\n');
 
-    // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ MongoDB connected\n');
+    console.log('MongoDB connected\n');
 
-    // Clear existing data
-    console.log('🗑️  Clearing existing data...');
-    await User.deleteMany({});
-    await Product.deleteMany({});
-    await BOM.deleteMany({});
-    await ECO.deleteMany({});
-    await Notification.deleteMany({});
-    console.log('✅ All collections cleared\n');
+    console.log('Clearing existing data (dropping database)...');
+    await mongoose.connection.db.dropDatabase();
+    console.log('Database dropped and ready for clean seed\n');
 
-    // ─────────────── USERS ───────────────
-    console.log('👥 Creating users...');
+    // ───── USERS ─────
+    console.log('Creating users...');
     const users = await User.create([
-      {
-        name: 'Admin User',
-        email: 'admin@plm.com',
-        password: 'admin123',
-        role: 'Admin',
-        avatar: null
-      },
-      {
-        name: 'Engineer User',
-        email: 'engineer@plm.com',
-        password: 'engineer123',
-        role: 'Engineering User',
-        avatar: null
-      },
-      {
-        name: 'Approver User',
-        email: 'approver@plm.com',
-        password: 'approver123',
-        role: 'Approver',
-        avatar: null
-      },
-      {
-        name: 'Operations User',
-        email: 'ops@plm.com',
-        password: 'ops123',
-        role: 'Operations User',
-        avatar: null
-      }
+      { _id: 'u1', name: 'Rishi Patel', email: 'rishi@plm.io', password: 'password123', role: 'Engineering User', avatar: 'RP', status: 'Active' },
+      { _id: 'u2', name: 'Ananya Sharma', email: 'ananya@plm.io', password: 'password123', role: 'Approver', avatar: 'AS', status: 'Active' },
+      { _id: 'u3', name: 'Vikram Desai', email: 'vikram@plm.io', password: 'password123', role: 'Operations User', avatar: 'VD', status: 'Active' },
+      { _id: 'u4', name: 'Priya Mehta', email: 'priya@plm.io', password: 'password123', role: 'Admin', avatar: 'PM', status: 'Active' },
     ]);
+    console.log(`${users.length} users created`);
+    users.forEach(u => console.log(`   - ${u.email} (${u.role})`));
 
-    const admin = users[0];
-    const engineer = users[1];
-    const approver = users[2];
-    const opsUser = users[3];
-
-    console.log(`   ✅ ${users.length} users created`);
-    users.forEach(u => console.log(`      • ${u.email} (${u.role})`));
-
-    // ─────────────── PRODUCTS ───────────────
-    console.log('\n📦 Creating products...');
+    // ───── PRODUCTS ─────
+    console.log('\nCreating products...');
     const products = await Product.create([
       {
-        name: 'iPhone 17',
-        sku: 'IPHONE-17-PRO',
-        version: 'v1',
-        status: 'Active',
-        category: 'Electronics',
-        description: 'Next-generation smartphone with advanced AI capabilities, titanium frame, and improved camera system.',
-        price: 1199.99,
-        weight: '185g',
-        material: 'Titanium + Ceramic Shield Glass',
+        _id: 'p1', name: 'Hydraulic Pump Assembly', sku: 'HPA-2024-001', version: '3.2', status: 'Active',
+        category: 'Mechanical', description: 'High-pressure hydraulic pump for industrial applications. Max pressure 350 bar.',
+        price: 2450.00, weight: '18.5 kg', material: 'Stainless Steel 316L',
+        createdAt: '2024-06-15', updatedAt: '2025-11-20',
+        images: [
+          { id: 'pimg1', name: 'Hydraulic Pump — Assembly Drawing', url: '/hydraulic_pump_old.png', category: 'Product Image', status: 'approved' },
+        ],
         versions: [
-          {
-            version: 'v1',
-            date: new Date('2024-01-15'),
-            changedBy: 'Admin User',
-            ecoId: '',
-            summary: 'Initial product creation'
-          }
-        ]
+          { version: '3.2', date: '2025-11-20', changedBy: 'Rishi Patel', eco: 'ECO-2025-012', summary: 'Updated seal material for higher temp resistance' },
+          { version: '3.1', date: '2025-08-10', changedBy: 'Ananya Sharma', eco: 'ECO-2025-008', summary: 'Added corrosion-resistant coating' },
+          { version: '3.0', date: '2025-03-01', changedBy: 'Rishi Patel', eco: 'ECO-2025-003', summary: 'Major redesign — new impeller geometry' },
+          { version: '2.1', date: '2024-09-12', changedBy: 'Vikram Desai', eco: 'ECO-2024-015', summary: 'Updated mounting bracket dimensions' },
+          { version: '2.0', date: '2024-06-15', changedBy: 'Rishi Patel', eco: null, summary: 'Initial production release' },
+        ],
+        bomId: 'b1',
       },
       {
-        name: 'Wooden Chair',
-        sku: 'FURN-WC-001',
-        version: 'v1',
-        status: 'Active',
-        category: 'Furniture',
-        description: 'Handcrafted solid oak dining chair with ergonomic design and premium finish.',
-        price: 249.99,
-        weight: '8.5kg',
-        material: 'Solid Oak Wood',
+        _id: 'p2', name: 'Electronic Control Unit', sku: 'ECU-2024-003', version: '2.0', status: 'Active',
+        category: 'Electronics', description: 'Programmable ECU for motor control systems. Supports CAN bus and Ethernet.',
+        price: 890.00, weight: '0.45 kg', material: 'FR-4 PCB / Aluminum enclosure',
+        createdAt: '2024-03-20', updatedAt: '2025-10-05',
+        images: [
+          { id: 'pimg2', name: 'ECU — PCB Layout v2.0', url: '/ecu_pcb_old.png', category: 'BoM Diagram', status: 'approved' },
+        ],
         versions: [
-          {
-            version: 'v1',
-            date: new Date('2024-02-01'),
-            changedBy: 'Admin User',
-            ecoId: '',
-            summary: 'Initial product creation'
-          }
-        ]
-      }
+          { version: '2.0', date: '2025-10-05', changedBy: 'Rishi Patel', eco: 'ECO-2025-010', summary: 'Upgraded to 32-bit ARM processor' },
+          { version: '1.2', date: '2025-05-18', changedBy: 'Ananya Sharma', eco: 'ECO-2025-006', summary: 'Added Ethernet support' },
+          { version: '1.0', date: '2024-03-20', changedBy: 'Rishi Patel', eco: null, summary: 'Initial release' },
+        ],
+        bomId: 'b2',
+      },
+      {
+        _id: 'p3', name: 'Precision Gear Box', sku: 'PGB-2024-007', version: '1.4', status: 'Active',
+        category: 'Mechanical', description: 'High-ratio planetary gear box for robotics applications. 100:1 reduction ratio.',
+        price: 1200.00, weight: '5.2 kg', material: 'Hardened Steel / Aluminum',
+        createdAt: '2024-01-10', updatedAt: '2025-09-25',
+        versions: [
+          { version: '1.4', date: '2025-09-25', changedBy: 'Vikram Desai', eco: 'ECO-2025-009', summary: 'Improved bearing arrangement' },
+          { version: '1.3', date: '2025-06-14', changedBy: 'Rishi Patel', eco: 'ECO-2025-007', summary: 'Updated gear tooth profile' },
+          { version: '1.0', date: '2024-01-10', changedBy: 'Rishi Patel', eco: null, summary: 'Initial release' },
+        ],
+        bomId: 'b3',
+      },
+      {
+        _id: 'p4', name: 'Thermal Sensor Module', sku: 'TSM-2024-012', version: '1.1', status: 'Active',
+        category: 'Electronics', description: 'Multi-point thermal sensor for industrial monitoring. -40°C to +250°C range.',
+        price: 320.00, weight: '0.12 kg', material: 'Ceramic / Platinum RTD',
+        createdAt: '2024-08-05', updatedAt: '2025-12-01',
+        versions: [
+          { version: '1.1', date: '2025-12-01', changedBy: 'Ananya Sharma', eco: 'ECO-2025-011', summary: 'Extended temperature range calibration' },
+          { version: '1.0', date: '2024-08-05', changedBy: 'Rishi Patel', eco: null, summary: 'Initial release' },
+        ],
+        bomId: 'b4',
+      },
+      {
+        _id: 'p5', name: 'Linear Actuator v1', sku: 'LAV-2023-002', version: '2.3', status: 'Archived',
+        category: 'Mechanical', description: 'Electric linear actuator for automated positioning (legacy model).',
+        price: 780.00, weight: '3.8 kg', material: 'Aluminum 6061',
+        createdAt: '2023-04-18', updatedAt: '2025-01-15',
+        versions: [
+          { version: '2.3', date: '2025-01-15', changedBy: 'Rishi Patel', eco: 'ECO-2025-001', summary: 'Final revision before archival' },
+          { version: '1.0', date: '2023-04-18', changedBy: 'Rishi Patel', eco: null, summary: 'Initial release' },
+        ],
+        bomId: null,
+      },
+      {
+        _id: 'p6', name: 'Coolant Flow Valve', sku: 'CFV-2025-001', version: '1.0', status: 'Active',
+        category: 'Fluid Systems', description: 'Proportional coolant flow control valve for CNC systems.',
+        price: 540.00, weight: '2.1 kg', material: 'Brass / PTFE Seals',
+        createdAt: '2025-02-10', updatedAt: '2025-02-10',
+        versions: [
+          { version: '1.0', date: '2025-02-10', changedBy: 'Rishi Patel', eco: null, summary: 'Initial release' },
+        ],
+        bomId: 'b5',
+      },
     ]);
+    console.log(`${products.length} products created`);
 
-    const iphone = products[0];
-    const chair = products[1];
-    console.log(`   ✅ ${products.length} products created`);
-
-    // ─────────────── BOMs ───────────────
-    console.log('\n🔧 Creating BOMs...');
+    // ───── BOMs ─────
+    console.log('\nCreating BOMs...');
     const boms = await BOM.create([
       {
-        name: 'iPhone 17 BOM',
-        productId: iphone._id,
-        version: 'v1',
-        status: 'Active',
+        _id: 'b1', name: 'Hydraulic Pump Assembly BoM', productId: 'p1', productName: 'Hydraulic Pump Assembly', version: '3.2', status: 'Active',
         components: [
-          { id: 'comp-001', name: 'Battery', partNumber: 'BAT-LI-4500', quantity: 1, unit: 'pcs', cost: 45.00 },
-          { id: 'comp-002', name: 'Screen', partNumber: 'SCR-OLED-6.7', quantity: 1, unit: 'pcs', cost: 120.00 },
-          { id: 'comp-003', name: 'Processor', partNumber: 'CPU-A19-BIO', quantity: 1, unit: 'pcs', cost: 85.00 },
-          { id: 'comp-004', name: 'Screws', partNumber: 'SCR-PH-M2', quantity: 12, unit: 'pcs', cost: 0.50 }
+          { id: 'c1', name: 'Pump Housing', partNumber: 'PH-316L-01', quantity: 1, unit: 'pcs', cost: 420.00 },
+          { id: 'c2', name: 'Impeller', partNumber: 'IMP-SS-03', quantity: 1, unit: 'pcs', cost: 185.00 },
+          { id: 'c3', name: 'Shaft Seal Kit', partNumber: 'SSK-VIT-02', quantity: 2, unit: 'set', cost: 65.00 },
+          { id: 'c4', name: 'Bearing Assembly', partNumber: 'BA-6205-2RS', quantity: 2, unit: 'pcs', cost: 38.00 },
+          { id: 'c5', name: 'Drive Shaft', partNumber: 'DS-4140-01', quantity: 1, unit: 'pcs', cost: 210.00 },
+          { id: 'c6', name: 'O-Ring Set', partNumber: 'ORS-VIT-05', quantity: 1, unit: 'set', cost: 22.00 },
+          { id: 'c7', name: 'Mounting Flange', partNumber: 'MF-SS-04', quantity: 1, unit: 'pcs', cost: 95.00 },
         ],
         operations: [
-          { id: 'op-001', name: 'PCB Assembly', workCenter: 'SMT Line', duration: '45min' },
-          { id: 'op-002', name: 'Display Bonding', workCenter: 'Clean Room', duration: '20min' },
-          { id: 'op-003', name: 'Final Assembly', workCenter: 'Assembly Line', duration: '30min' },
-          { id: 'op-004', name: 'Quality Test', workCenter: 'QC Lab', duration: '15min' }
-        ]
+          { id: 'op1', name: 'CNC Machining — Housing', workCenter: 'CNC Bay A', duration: '4.5 hrs' },
+          { id: 'op2', name: 'Shaft Assembly', workCenter: 'Assembly Line 1', duration: '1.2 hrs' },
+          { id: 'op3', name: 'Pressure Testing', workCenter: 'QC Lab', duration: '0.8 hrs' },
+          { id: 'op4', name: 'Final Assembly', workCenter: 'Assembly Line 1', duration: '2.0 hrs' },
+        ],
       },
       {
-        name: 'Wooden Chair BOM',
-        productId: chair._id,
-        version: 'v1',
-        status: 'Active',
+        _id: 'b2', name: 'Electronic Control Unit BoM', productId: 'p2', productName: 'Electronic Control Unit', version: '2.0', status: 'Active',
         components: [
-          { id: 'comp-101', name: 'Wooden Legs', partNumber: 'WD-LEG-OAK', quantity: 4, unit: 'pcs', cost: 12.00 },
-          { id: 'comp-102', name: 'Wooden Top', partNumber: 'WD-SEAT-OAK', quantity: 1, unit: 'pcs', cost: 35.00 },
-          { id: 'comp-103', name: 'Screws', partNumber: 'SCR-WD-M4', quantity: 12, unit: 'pcs', cost: 0.25 },
-          { id: 'comp-104', name: 'Varnish', partNumber: 'FIN-VAR-CLR', quantity: 1, unit: 'litre', cost: 18.00 }
+          { id: 'c8', name: 'ARM Cortex M4 MCU', partNumber: 'STM32F407', quantity: 1, unit: 'pcs', cost: 12.50 },
+          { id: 'c9', name: 'CAN Transceiver', partNumber: 'MCP2551', quantity: 2, unit: 'pcs', cost: 3.20 },
+          { id: 'c10', name: 'Ethernet PHY', partNumber: 'KSZ8081', quantity: 1, unit: 'pcs', cost: 4.80 },
+          { id: 'c11', name: 'PCB Board', partNumber: 'PCB-ECU-V2', quantity: 1, unit: 'pcs', cost: 28.00 },
+          { id: 'c12', name: 'Aluminum Enclosure', partNumber: 'ENC-AL-02', quantity: 1, unit: 'pcs', cost: 18.00 },
+          { id: 'c13', name: 'Power Regulator', partNumber: 'LM7805', quantity: 1, unit: 'pcs', cost: 1.50 },
         ],
         operations: [
-          { id: 'op-101', name: 'Assembly', workCenter: 'Woodshop', duration: '60min' },
-          { id: 'op-102', name: 'Painting', workCenter: 'Paint Booth', duration: '30min' },
-          { id: 'op-103', name: 'Packing', workCenter: 'Packing Area', duration: '20min' }
-        ]
-      }
-    ]);
-
-    const iphoneBom = boms[0];
-    const chairBom = boms[1];
-
-    // Link BOMs to products
-    iphone.bomId = iphoneBom._id;
-    chair.bomId = chairBom._id;
-    await iphone.save();
-    await chair.save();
-
-    console.log(`   ✅ ${boms.length} BOMs created and linked to products`);
-
-    // ─────────────── ECOs ───────────────
-    console.log('\n📋 Creating ECOs...');
-
-    const currentYear = new Date().getFullYear();
-
-    // ECO 1 — New stage (change iPhone 17 screw count)
-    const eco1 = await ECO.create({
-      title: 'Update iPhone 17 Screw Count',
-      ecoNumber: `ECO-${currentYear}-001`,
-      type: 'BoM',
-      productId: iphone._id,
-      bomId: iphoneBom._id,
-      stage: 'New',
-      priority: 'Low',
-      createdBy: engineer._id,
-      effectiveDate: new Date('2024-06-01'),
-      versionUpdate: false,
-      description: 'Change screw count from 12 to 14 for improved structural integrity in the housing assembly.',
-      changes: [
-        {
-          fieldName: 'component.Screws',
-          oldValue: '12',
-          newValue: '14',
-          changeType: 'modified'
-        }
-      ],
-      approvalLogs: [
-        {
-          userName: 'Engineer User',
-          action: 'ECO Created',
-          timestamp: new Date(),
-          comment: 'ECO created by Engineer User'
-        }
-      ]
-    });
-
-    // ECO 2 — In Review stage (update Wooden Chair price)
-    const eco2 = await ECO.create({
-      title: 'Update Wooden Chair Price',
-      ecoNumber: `ECO-${currentYear}-002`,
-      type: 'Product',
-      productId: chair._id,
-      bomId: chairBom._id,
-      stage: 'In Review',
-      priority: 'Medium',
-      createdBy: engineer._id,
-      effectiveDate: new Date('2024-07-01'),
-      versionUpdate: false,
-      description: 'Increase the price from $249.99 to $279.99 due to rising raw material costs for solid oak.',
-      changes: [
-        {
-          fieldName: 'price',
-          oldValue: '249.99',
-          newValue: '279.99',
-          changeType: 'modified'
-        }
-      ],
-      approvalLogs: [
-        {
-          userName: 'Engineer User',
-          action: 'ECO Created',
-          timestamp: new Date(Date.now() - 86400000 * 3),
-          comment: 'ECO created by Engineer User'
-        },
-        {
-          userName: 'Engineer User',
-          action: 'Submitted for Review',
-          timestamp: new Date(Date.now() - 86400000 * 2),
-          comment: 'Ready for engineering review'
-        }
-      ]
-    });
-
-    // ECO 3 — Approval stage (change battery component)
-    const eco3 = await ECO.create({
-      title: 'Upgrade iPhone 17 Battery Component',
-      ecoNumber: `ECO-${currentYear}-003`,
-      type: 'BoM',
-      productId: iphone._id,
-      bomId: iphoneBom._id,
-      stage: 'Approval',
-      priority: 'High',
-      createdBy: engineer._id,
-      effectiveDate: new Date('2024-08-01'),
-      versionUpdate: true,
-      newVersion: 'v2',
-      description: 'Replace current 4500mAh battery with new 5000mAh solid-state battery for improved performance and safety.',
-      changes: [
-        {
-          fieldName: 'component.Battery',
-          oldValue: 'BAT-LI-4500 (4500mAh Li-Ion)',
-          newValue: 'BAT-SS-5000 (5000mAh Solid State)',
-          changeType: 'modified'
-        }
-      ],
-      approvalLogs: [
-        {
-          userName: 'Engineer User',
-          action: 'ECO Created',
-          timestamp: new Date(Date.now() - 86400000 * 7),
-          comment: 'ECO created by Engineer User'
-        },
-        {
-          userName: 'Engineer User',
-          action: 'Submitted for Review',
-          timestamp: new Date(Date.now() - 86400000 * 5),
-          comment: 'All component specs validated'
-        },
-        {
-          userName: 'Engineer User',
-          action: 'Advanced to Approval',
-          timestamp: new Date(Date.now() - 86400000 * 2),
-          comment: 'Engineering review complete, ready for approval'
-        }
-      ]
-    });
-
-    // ECO 4 — Done stage (already applied, version bumped)
-    const eco4 = await ECO.create({
-      title: 'Add Backrest to Wooden Chair',
-      ecoNumber: `ECO-${currentYear}-004`,
-      type: 'BoM',
-      productId: chair._id,
-      bomId: chairBom._id,
-      stage: 'Done',
-      priority: 'Medium',
-      createdBy: engineer._id,
-      effectiveDate: new Date('2024-04-01'),
-      versionUpdate: true,
-      newVersion: 'v2',
-      description: 'Added wooden backrest component to the chair design for improved ergonomics and customer comfort.',
-      changes: [
-        {
-          fieldName: 'component.Wooden Backrest',
-          oldValue: '',
-          newValue: '1',
-          changeType: 'added'
-        }
-      ],
-      approvalLogs: [
-        {
-          userName: 'Engineer User',
-          action: 'ECO Created',
-          timestamp: new Date(Date.now() - 86400000 * 30),
-          comment: 'ECO created by Engineer User'
-        },
-        {
-          userName: 'Engineer User',
-          action: 'Submitted for Review',
-          timestamp: new Date(Date.now() - 86400000 * 28),
-          comment: 'Design completed and validated'
-        },
-        {
-          userName: 'Engineer User',
-          action: 'Advanced to Approval',
-          timestamp: new Date(Date.now() - 86400000 * 25),
-          comment: 'Engineering review passed'
-        },
-        {
-          userName: 'Approver User',
-          action: 'Approved',
-          timestamp: new Date(Date.now() - 86400000 * 20),
-          comment: 'Approved — backrest addition improves product value'
-        }
-      ]
-    });
-
-    console.log(`   ✅ 4 ECOs created (New, In Review, Approval, Done)`);
-
-    // ─────────────── NOTIFICATIONS ───────────────
-    console.log('\n🔔 Creating notifications...');
-    await Notification.create([
-      {
-        userId: approver._id,
-        title: `ECO "Upgrade iPhone 17 Battery Component" is ready for your approval`,
-        type: 'approval',
-        ecoId: eco3._id,
-        read: false
+          { id: 'op5', name: 'SMT Soldering', workCenter: 'SMT Line B', duration: '0.5 hrs' },
+          { id: 'op6', name: 'Firmware Flash', workCenter: 'Programming Station', duration: '0.2 hrs' },
+          { id: 'op7', name: 'Functional Testing', workCenter: 'QC Lab', duration: '1.0 hrs' },
+          { id: 'op8', name: 'Enclosure Assembly', workCenter: 'Assembly Line 2', duration: '0.3 hrs' },
+        ],
       },
       {
-        userId: engineer._id,
-        title: `ECO "Add Backrest to Wooden Chair" (ECO-${currentYear}-004) has been approved and applied`,
-        type: 'info',
-        ecoId: eco4._id,
-        read: true
+        _id: 'b3', name: 'Precision Gear Box BoM', productId: 'p3', productName: 'Precision Gear Box', version: '1.4', status: 'Active',
+        components: [
+          { id: 'c14', name: 'Sun Gear', partNumber: 'SG-HS-01', quantity: 1, unit: 'pcs', cost: 85.00 },
+          { id: 'c15', name: 'Planet Gears', partNumber: 'PG-HS-03', quantity: 3, unit: 'pcs', cost: 45.00 },
+          { id: 'c16', name: 'Ring Gear', partNumber: 'RG-HS-01', quantity: 1, unit: 'pcs', cost: 120.00 },
+          { id: 'c17', name: 'Carrier', partNumber: 'CR-AL-01', quantity: 1, unit: 'pcs', cost: 65.00 },
+          { id: 'c18', name: 'Needle Bearings', partNumber: 'NB-HK-12', quantity: 6, unit: 'pcs', cost: 8.00 },
+          { id: 'c19', name: 'Output Shaft', partNumber: 'OS-4140-02', quantity: 1, unit: 'pcs', cost: 95.00 },
+        ],
+        operations: [
+          { id: 'op9', name: 'Gear Hobbing', workCenter: 'CNC Bay B', duration: '3.0 hrs' },
+          { id: 'op10', name: 'Heat Treatment', workCenter: 'Heat Treat Furnace', duration: '6.0 hrs' },
+          { id: 'op11', name: 'Gear Assembly', workCenter: 'Clean Room Assembly', duration: '1.5 hrs' },
+          { id: 'op12', name: 'Run-in Testing', workCenter: 'Test Bench', duration: '2.0 hrs' },
+        ],
       },
       {
-        userId: admin._id,
-        title: `New ECO "Update iPhone 17 Screw Count" created by Engineer User`,
-        type: 'info',
-        ecoId: eco1._id,
-        read: false
-      }
+        _id: 'b4', name: 'Thermal Sensor Module BoM', productId: 'p4', productName: 'Thermal Sensor Module', version: '1.1', status: 'Active',
+        components: [
+          { id: 'c20', name: 'PT100 RTD Element', partNumber: 'RTD-PT100-A', quantity: 4, unit: 'pcs', cost: 14.00 },
+          { id: 'c21', name: 'Signal Conditioner IC', partNumber: 'MAX31865', quantity: 1, unit: 'pcs', cost: 8.50 },
+          { id: 'c22', name: 'Ceramic Housing', partNumber: 'CH-AL2O3-01', quantity: 1, unit: 'pcs', cost: 25.00 },
+          { id: 'c23', name: 'Connector Assembly', partNumber: 'CA-M12-4P', quantity: 1, unit: 'pcs', cost: 6.00 },
+        ],
+        operations: [
+          { id: 'op13', name: 'RTD Bonding', workCenter: 'Clean Room Assembly', duration: '0.8 hrs' },
+          { id: 'op14', name: 'Calibration', workCenter: 'Calibration Lab', duration: '1.5 hrs' },
+          { id: 'op15', name: 'Potting & Sealing', workCenter: 'Assembly Line 2', duration: '0.4 hrs' },
+        ],
+      },
+      {
+        _id: 'b5', name: 'Coolant Flow Valve BoM', productId: 'p6', productName: 'Coolant Flow Valve', version: '1.0', status: 'Active',
+        components: [
+          { id: 'c24', name: 'Valve Body', partNumber: 'VB-BR-01', quantity: 1, unit: 'pcs', cost: 85.00 },
+          { id: 'c25', name: 'PTFE Seal Set', partNumber: 'PTFE-SS-01', quantity: 1, unit: 'set', cost: 18.00 },
+          { id: 'c26', name: 'Solenoid Actuator', partNumber: 'SOL-24V-03', quantity: 1, unit: 'pcs', cost: 42.00 },
+          { id: 'c27', name: 'Spring Return', partNumber: 'SPR-SS-08', quantity: 1, unit: 'pcs', cost: 5.50 },
+        ],
+        operations: [
+          { id: 'op16', name: 'Valve Machining', workCenter: 'CNC Bay A', duration: '2.0 hrs' },
+          { id: 'op17', name: 'Assembly & Seal Test', workCenter: 'Assembly Line 1', duration: '0.6 hrs' },
+        ],
+      },
     ]);
-    console.log('   ✅ 3 notifications created');
+    console.log(`${boms.length} BOMs created`);
 
-    // ─────────────── SUMMARY ───────────────
-    console.log('\n' + '═'.repeat(50));
-    console.log('🎉 DATABASE SEEDED SUCCESSFULLY!');
-    console.log('═'.repeat(50));
-    console.log('\n📊 Summary:');
-    console.log(`   • ${users.length} Users`);
-    console.log(`   • ${products.length} Products`);
-    console.log(`   • ${boms.length} BOMs`);
-    console.log(`   • 4 ECOs`);
-    console.log(`   • 3 Notifications`);
-    console.log('\n🔑 Login Credentials:');
-    console.log('   ┌──────────────────────┬───────────────┬────────────────────┐');
-    console.log('   │ Email                │ Password      │ Role               │');
-    console.log('   ├──────────────────────┼───────────────┼────────────────────┤');
-    console.log('   │ admin@plm.com        │ admin123      │ Admin              │');
-    console.log('   │ engineer@plm.com     │ engineer123   │ Engineering User   │');
-    console.log('   │ approver@plm.com     │ approver123   │ Approver           │');
-    console.log('   │ ops@plm.com          │ ops123        │ Operations User    │');
-    console.log('   └──────────────────────┴───────────────┴────────────────────┘');
+    // ───── ECOs ─────
+    console.log('\nCreating ECOs...');
+    const ecos = await ECO.create([
+      {
+        _id: 'eco1', title: 'Upgrade Seal Material for High-Temp Applications', ecoNumber: 'ECO-2026-001',
+        type: 'Product', productId: 'p1', productName: 'Hydraulic Pump Assembly',
+        stage: 'New', priority: 'High', createdBy: 'u1', createdByName: 'Rishi Patel',
+        createdAt: '2026-03-18', effectiveDate: '2026-04-15',
+        versionUpdate: true, newVersion: '3.3',
+        description: 'Replace existing Viton seals with Kalrez perfluoroelastomer seals to extend operating temperature range from 200°C to 315°C.',
+        changes: [
+          { field: 'Material', oldValue: 'Viton Seals', newValue: 'Kalrez 6375 Seals', type: 'modified' },
+          { field: 'Max Operating Temp', oldValue: '200°C', newValue: '315°C', type: 'modified' },
+          { field: 'Price', oldValue: '$2,450.00', newValue: '$2,680.00', type: 'modified' },
+          { field: 'Certification', oldValue: '—', newValue: 'API 682 Compliant', type: 'added' },
+        ],
+        attachedImages: [
+          { id: 'eimg1', name: 'Updated Seal Design Drawing', url: '/hydraulic_pump_new.png', category: 'Product Image', uploadedAt: '2026-03-18 10:30', status: 'pending', size: 245000, type: 'image/png' },
+        ],
+        imageChanges: [
+          { id: 'ic1', label: 'Assembly Drawing — Seal Section', changeType: 'modified', oldImage: { id: 'pimg1', name: 'Current Seal Design', url: '/hydraulic_pump_old.png', category: 'Product Image' }, newImage: { id: 'eimg1', name: 'Updated Seal Design', url: '/hydraulic_pump_new.png', category: 'Product Image' }, reviewStatus: null, reviewComment: null, reviewedBy: null },
+        ],
+        approvalLogs: [],
+      },
+      {
+        _id: 'eco2', title: 'Add WiFi Module to ECU', ecoNumber: 'ECO-2026-002',
+        type: 'BoM', productId: 'p2', productName: 'Electronic Control Unit', bomId: 'b2',
+        stage: 'Approval', priority: 'Medium', createdBy: 'u1', createdByName: 'Rishi Patel',
+        createdAt: '2026-03-10', effectiveDate: '2026-05-01',
+        versionUpdate: true, newVersion: '2.1',
+        description: 'Add ESP32 WiFi module to the ECU BoM for wireless diagnostics and OTA firmware updates.',
+        changes: [
+          { field: 'Component: ESP32 WiFi Module', oldValue: '—', newValue: 'ESP32-WROOM-32 (qty: 1)', type: 'added' },
+          { field: 'Component: WiFi Antenna', oldValue: '—', newValue: 'ANT-2.4G-PCB (qty: 1)', type: 'added' },
+          { field: 'Component: Power Regulator', oldValue: 'LM7805 (qty: 1)', newValue: 'LM7805 (qty: 2)', type: 'modified' },
+          { field: 'PCB Board', oldValue: 'PCB-ECU-V2', newValue: 'PCB-ECU-V2.1 (new layout)', type: 'modified' },
+        ],
+        attachedImages: [
+          { id: 'eimg2', name: 'PCB Layout v2.1 — WiFi Module', url: '/ecu_pcb_new.png', category: 'BoM Diagram', uploadedAt: '2026-03-10 14:20', status: 'pending', size: 312000, type: 'image/png' },
+        ],
+        imageChanges: [
+          { id: 'ic2', label: 'PCB Layout — WiFi Module Addition', changeType: 'modified', oldImage: { id: 'pimg2', name: 'PCB Layout v2.0', url: '/ecu_pcb_old.png', category: 'BoM Diagram' }, newImage: { id: 'eimg2', name: 'PCB Layout v2.1', url: '/ecu_pcb_new.png', category: 'BoM Diagram' }, reviewStatus: null, reviewComment: null, reviewedBy: null },
+          { id: 'ic3', label: 'WiFi Antenna Placement Sketch', changeType: 'added', oldImage: null, newImage: { id: 'eimg3', name: 'Antenna Placement', url: '/ecu_pcb_new.png', category: 'Design Sketch' }, reviewStatus: null, reviewComment: null, reviewedBy: null },
+        ],
+        approvalLogs: [
+          { user: 'Rishi Patel', action: 'Submitted for Approval', timestamp: '2026-03-12 09:30', comment: 'Ready for review. Prototype tested successfully.' },
+        ],
+      },
+      {
+        _id: 'eco3', title: 'Improve Gear Box Bearing Arrangement', ecoNumber: 'ECO-2026-003',
+        type: 'BoM', productId: 'p3', productName: 'Precision Gear Box', bomId: 'b3',
+        stage: 'Done', priority: 'Low', createdBy: 'u1', createdByName: 'Rishi Patel',
+        createdAt: '2026-02-20', effectiveDate: '2026-03-15',
+        versionUpdate: true, newVersion: '1.5',
+        description: 'Replace needle bearings with angular contact bearings for improved axial load capacity.',
+        changes: [
+          { field: 'Component: Needle Bearings', oldValue: 'NB-HK-12 (qty: 6)', newValue: '—', type: 'removed' },
+          { field: 'Component: Angular Contact Bearings', oldValue: '—', newValue: 'ACB-7201-BE (qty: 4)', type: 'added' },
+          { field: 'Axial Load Capacity', oldValue: '2,500 N', newValue: '4,200 N', type: 'modified' },
+        ],
+        approvalLogs: [
+          { user: 'Rishi Patel', action: 'Submitted for Approval', timestamp: '2026-02-22 14:15', comment: 'FEA analysis attached. 68% improvement in axial load.' },
+          { user: 'Ananya Sharma', action: 'Approved', timestamp: '2026-02-24 10:00', comment: 'Analysis verified. Approved for production.' },
+          { user: 'System', action: 'Applied to Production', timestamp: '2026-03-15 00:00', comment: 'Changes applied. BoM updated to v1.5.' },
+        ],
+      },
+      {
+        _id: 'eco4', title: 'Update Thermal Sensor Calibration Range', ecoNumber: 'ECO-2026-004',
+        type: 'Product', productId: 'p4', productName: 'Thermal Sensor Module',
+        stage: 'In Review', priority: 'Medium', createdBy: 'u1', createdByName: 'Rishi Patel',
+        createdAt: '2026-03-15', effectiveDate: '2026-04-20',
+        versionUpdate: false, newVersion: null,
+        description: 'Recalibrate sensor firmware to improve accuracy at extreme temperatures.',
+        changes: [
+          { field: 'Accuracy (Low Range)', oldValue: '±0.5°C @ -40°C', newValue: '±0.3°C @ -40°C', type: 'modified' },
+          { field: 'Accuracy (High Range)', oldValue: '±1.0°C @ 250°C', newValue: '±0.5°C @ 250°C', type: 'modified' },
+          { field: 'Firmware Version', oldValue: 'v1.1.0', newValue: 'v1.2.0', type: 'modified' },
+        ],
+        approvalLogs: [
+          { user: 'Rishi Patel', action: 'Submitted for Approval', timestamp: '2026-03-16 11:00', comment: 'Calibration data from 50-unit sample attached.' },
+        ],
+      },
+      {
+        _id: 'eco5', title: 'Add Pressure Relief to Coolant Valve', ecoNumber: 'ECO-2026-005',
+        type: 'BoM', productId: 'p6', productName: 'Coolant Flow Valve', bomId: 'b5',
+        stage: 'New', priority: 'High', createdBy: 'u4', createdByName: 'Priya Mehta',
+        createdAt: '2026-03-20', effectiveDate: '2026-05-10',
+        versionUpdate: true, newVersion: '1.1',
+        description: 'Add integrated pressure relief mechanism to prevent system damage during pressure spikes.',
+        changes: [
+          { field: 'Component: Relief Valve', oldValue: '—', newValue: 'RV-BR-15PSI (qty: 1)', type: 'added' },
+          { field: 'Component: Pressure Spring', oldValue: '—', newValue: 'PS-SS-15 (qty: 1)', type: 'added' },
+          { field: 'Valve Body', oldValue: 'VB-BR-01', newValue: 'VB-BR-02 (relief port added)', type: 'modified' },
+          { field: 'Max System Pressure', oldValue: 'No relief', newValue: '15 PSI relief', type: 'added' },
+        ],
+        approvalLogs: [],
+      },
+    ]);
+    console.log(`${ecos.length} ECOs created`);
+
+    // ───── APPROVAL RULES ─────
+    console.log('\nCreating approval rules...');
+    const rules = await ApprovalRule.create([
+      { _id: 'ar1', name: 'High Priority Tech Review', conditions: 'Priority = High AND Category = Electronics', stage: 'In Review', requiredRole: 'Engineering User', status: 'Active' },
+      { _id: 'ar2', name: 'Final Sign-off', conditions: 'Stage = Approval', stage: 'Approval', requiredRole: 'Approver', status: 'Active' },
+      { _id: 'ar3', name: 'Cost Impact Review', conditions: 'Cost Change > $500', stage: 'Approval', requiredRole: 'Admin', status: 'Inactive' },
+    ]);
+    console.log(`${rules.length} approval rules created`);
+
+    // ───── ACTIVITY TIMELINE ─────
+    console.log('\nCreating activity timeline...');
+    const activities = await Activity.create([
+      { _id: 'a1', type: 'eco_created', title: 'ECO-2026-005 Created', description: 'Priya Mehta created ECO for Coolant Flow Valve', timestamp: '2026-03-20 16:30', user: 'Priya Mehta', ecoId: 'eco5' },
+      { _id: 'a2', type: 'eco_created', title: 'ECO-2026-001 Created', description: 'Rishi Patel created ECO for Hydraulic Pump seal upgrade', timestamp: '2026-03-18 10:15', user: 'Rishi Patel', ecoId: 'eco1' },
+      { _id: 'a3', type: 'eco_submitted', title: 'ECO-2026-004 Submitted', description: 'Thermal Sensor calibration ECO submitted for review', timestamp: '2026-03-16 11:00', user: 'Rishi Patel', ecoId: 'eco4' },
+      { _id: 'a4', type: 'eco_approved', title: 'ECO-2026-003 Completed', description: 'Gear Box bearing ECO approved and applied to production', timestamp: '2026-03-15 00:00', user: 'System', ecoId: 'eco3' },
+      { _id: 'a5', type: 'eco_submitted', title: 'ECO-2026-002 Submitted', description: 'WiFi Module ECO submitted for approval review', timestamp: '2026-03-12 09:30', user: 'Rishi Patel', ecoId: 'eco2' },
+      { _id: 'a6', type: 'product_updated', title: 'Thermal Sensor Module Updated', description: 'Version 1.1 released with extended calibration', timestamp: '2025-12-01 15:20', user: 'Ananya Sharma', ecoId: null },
+      { _id: 'a7', type: 'eco_created', title: 'ECO-2025-012 Created', description: 'Hydraulic Pump seal material change initiated', timestamp: '2025-11-18 09:45', user: 'Rishi Patel', ecoId: null },
+      { _id: 'a8', type: 'product_updated', title: 'Electronic Control Unit Updated', description: 'Version 2.0 released with ARM upgrade', timestamp: '2025-10-05 14:00', user: 'Rishi Patel', ecoId: null },
+    ]);
+    console.log(`${activities.length} activities created`);
+
+    // ───── NOTIFICATIONS ─────
+    console.log('\nCreating notifications...');
+    const notifications = await Notification.create([
+      { _id: 'n1', title: 'ECO-2026-002 awaiting your approval', type: 'approval', ecoId: 'eco2', read: false, timestamp: '2026-03-12 09:30' },
+      { _id: 'n2', title: 'ECO-2026-004 submitted for review', type: 'review', ecoId: 'eco4', read: false, timestamp: '2026-03-16 11:00' },
+      { _id: 'n3', title: 'ECO-2026-003 has been approved', type: 'info', ecoId: 'eco3', read: true, timestamp: '2026-02-24 10:00' },
+      { _id: 'n4', title: 'ECO-2026-005 created by Priya Mehta', type: 'info', ecoId: 'eco5', read: false, timestamp: '2026-03-20 16:30' },
+    ]);
+    console.log(`${notifications.length} notifications created`);
+
+    // ───── SETTINGS ─────
+    console.log('\nCreating settings...');
+    await Setting.create([
+      { key: 'eco_stages', value: ['New', 'In Review', 'Approval', 'Done'] },
+      { key: 'approval_rules', value: [
+        { id: 'r1', name: 'Require approval for BoM changes', enabled: true },
+        { id: 'r2', name: 'Auto-create version on approval', enabled: true },
+        { id: 'r3', name: 'Require comment on rejection', enabled: true },
+        { id: 'r4', name: 'Notify creator on stage change', enabled: false },
+        { id: 'r5', name: 'Allow multi-approver workflow', enabled: false },
+      ]},
+    ]);
+    console.log('Settings created');
+
+    console.log('\n' + '='.repeat(50));
+    console.log('DATABASE SEEDED SUCCESSFULLY!');
+    console.log('='.repeat(50));
+    console.log('\nSummary:');
+    console.log(`   - ${users.length} Users`);
+    console.log(`   - ${products.length} Products`);
+    console.log(`   - ${boms.length} BOMs`);
+    console.log(`   - ${ecos.length} ECOs`);
+    console.log(`   - ${rules.length} Approval Rules`);
+    console.log(`   - ${activities.length} Activities`);
+    console.log(`   - ${notifications.length} Notifications`);
+    console.log(`   - 2 Settings`);
+    console.log('\nLogin Credentials:');
+    console.log('   ' + 'Email'.padEnd(22) + '| Password'.padEnd(15) + '| Role');
+    console.log('   ' + '-'.repeat(55));
+    console.log('   rishi@plm.io'.padEnd(22) + '| password123'.padEnd(15) + '| Engineering User');
+    console.log('   ananya@plm.io'.padEnd(22) + '| password123'.padEnd(15) + '| Approver');
+    console.log('   vikram@plm.io'.padEnd(22) + '| password123'.padEnd(15) + '| Operations User');
+    console.log('   priya@plm.io'.padEnd(22) + '| password123'.padEnd(15) + '| Admin');
     console.log('\n');
 
     process.exit(0);
   } catch (error) {
-    console.error('\n❌ Seed error:', error);
+    console.error('\nSeed error:', error);
     process.exit(1);
   }
 };

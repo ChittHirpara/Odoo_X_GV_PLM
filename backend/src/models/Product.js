@@ -1,14 +1,23 @@
 const mongoose = require('mongoose');
 
+const imageSchema = new mongoose.Schema({
+  id: { type: String },
+  name: { type: String },
+  url: { type: String },
+  category: { type: String },
+  status: { type: String, default: 'approved' }
+}, { _id: false });
+
 const versionEntrySchema = new mongoose.Schema({
   version: { type: String },
-  date: { type: Date, default: Date.now },
+  date: { type: String },
   changedBy: { type: String },
-  ecoId: { type: String },
+  eco: { type: String, default: null },
   summary: { type: String }
 }, { _id: false });
 
 const productSchema = new mongoose.Schema({
+  _id: { type: String },
   name: {
     type: String,
     required: [true, 'Product name is required'],
@@ -18,13 +27,12 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: [true, 'SKU is required'],
     unique: true,
-    uppercase: true,
     trim: true
   },
   version: {
     type: String,
     required: true,
-    default: 'v1'
+    default: '1.0'
   },
   status: {
     type: String,
@@ -49,14 +57,27 @@ const productSchema = new mongoose.Schema({
   material: {
     type: String
   },
-  bomId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'BOM',
-    default: null
+  createdAt: {
+    type: String
   },
-  versions: [versionEntrySchema]
+  updatedAt: {
+    type: String
+  },
+  images: [imageSchema],
+  versions: [versionEntrySchema],
+  bomId: {
+    type: String,
+    default: null
+  }
 }, {
-  timestamps: true
+  _id: false,
+  timestamps: false,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+productSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 module.exports = mongoose.model('Product', productSchema);

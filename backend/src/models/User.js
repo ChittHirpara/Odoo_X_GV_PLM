@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
+  _id: { type: String },
   name: {
     type: String,
     required: [true, 'Name is required'],
@@ -27,9 +28,21 @@ const userSchema = new mongoose.Schema({
   avatar: {
     type: String,
     default: null
+  },
+  status: {
+    type: String,
+    enum: ['Active', 'Inactive'],
+    default: 'Active'
   }
 }, {
-  timestamps: true
+  _id: false,
+  timestamps: true,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+userSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 // Hash password before saving
@@ -47,7 +60,7 @@ userSchema.methods.comparePassword = async function (enteredPassword) {
 
 // Remove password from JSON output
 userSchema.methods.toJSON = function () {
-  const obj = this.toObject();
+  const obj = this.toObject({ virtuals: true });
   delete obj.password;
   return obj;
 };

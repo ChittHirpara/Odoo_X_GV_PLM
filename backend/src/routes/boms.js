@@ -1,79 +1,64 @@
 const express = require('express');
 const BOM = require('../models/BOM');
 const authMiddleware = require('../middleware/auth');
+const roleMiddleware = require('../middleware/roles');
 
 const router = express.Router();
 
-/**
- * GET /api/boms
- * Returns all BOMs
- * Auth required, all roles
- */
+// GET /api/boms — List all BOMs
 router.get('/', authMiddleware, async (req, res) => {
-  console.log('[ROUTE] GET /api/boms called');
-
   try {
-    let query = {};
-
-    // Operations User can only see Active BOMs
-    if (req.user.role === 'Operations User') {
-      query.status = 'Active';
-    }
-
-    const boms = await BOM.find(query)
-      .populate('productId')
-      .sort({ createdAt: -1 });
-
-    res.json({
-      success: true,
-      data: boms
-    });
+    const boms = await BOM.find().sort({ version: -1 });
+    res.json({ success: true, data: boms });
   } catch (error) {
-    console.error('[BOMS] List error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch BOMs'
-    });
+    res.status(500).json({ success: false, message: 'Failed to fetch BOMs' });
   }
 });
 
-/**
- * GET /api/boms/:id
- * Returns full BOM with components and operations arrays
- * Auth required, all roles
- */
+// GET /api/boms/:id — Get single BOM  
 router.get('/:id', authMiddleware, async (req, res) => {
-  console.log(`[ROUTE] GET /api/boms/${req.params.id} called`);
-
   try {
-    const bom = await BOM.findById(req.params.id).populate('productId');
-
+    const bom = await BOM.findOne({ _id: req.params.id });
     if (!bom) {
-      return res.status(404).json({
-        success: false,
-        message: 'BOM not found'
-      });
+      return res.status(404).json({ success: false, message: 'BOM not found' });
     }
-
-    // Operations User can only see Active BOMs
-    if (req.user.role === 'Operations User' && bom.status !== 'Active') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. You can only view active BOMs.'
-      });
-    }
-
-    res.json({
-      success: true,
-      data: bom
-    });
+    res.json({ success: true, data: bom });
   } catch (error) {
-    console.error('[BOMS] Get error:', error.message);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to fetch BOM'
+    res.status(500).json({ success: false, message: 'Failed to fetch BOM' });
+  }
+});
+
+// POST /api/boms — Create BOM (Engineering/Admin only)
+router.post('/', authMiddleware, roleMiddleware(['Admin', 'Engineering User']), async (req, res) => {
+  try {
+    const { name, productId, productName, components, operations } = req.body;
+    const newBom = await BOM.create({
+      id: `bom${Date.now()}`,
+      name,
+      productId,
+      productName: productName || '',
+      version: '1.0',
+      status: 'Draft',
+      components: (components || []).map((c, i) => ({
+        id: c.id || `comp-${Date.now()}-${i}`,
+        name: c.name,
+        partNumber: c.partNumber || '',
+        quantity: c.quantity || 1,
+        unit: c.unit || 'pcs',
+        cost: c.cost || 0
+      })),
+      operations: (operations || []).map((op, i) => ({
+        id: op.id || `op-${Date.now()}-${i}`,
+        name: op.name,
+        workCenter: op.workCenter || '',
+        duration: op.duration || ''
+      }))
     });
+    res.status(201).json({ success: true, data: newBom });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Failed to create BOM' });
   }
 });
 
 module.exports = router;
+

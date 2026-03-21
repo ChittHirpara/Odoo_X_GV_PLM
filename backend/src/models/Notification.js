@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User reference is required']
-  },
+  _id: { type: String },
   title: {
     type: String,
     required: [true, 'Notification title is required'],
@@ -17,16 +13,25 @@ const notificationSchema = new mongoose.Schema({
     default: 'info'
   },
   ecoId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'ECO',
+    type: String,
     default: null
   },
   read: {
     type: Boolean,
     default: false
+  },
+  timestamp: {
+    type: String
   }
 }, {
-  timestamps: true
+  _id: false,
+  timestamps: false,
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true }
+});
+
+notificationSchema.virtual('id').get(function() {
+  return this._id;
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);
