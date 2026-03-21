@@ -93,15 +93,8 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen, collapsed, 
       {/* Logo */}
       <div className="h-16 flex items-center justify-between px-5 border-b border-surface-200 bg-surface-50 relative z-10">
         <div className="flex items-center gap-3 min-w-0 h-full">
-          <div className="w-9 h-9 flex-shrink-0 bg-primary-900 rounded-xl flex items-center justify-center relative shadow-sm border border-primary-800">
-            {/* Hexagon Outline (Tan/Sand) */}
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute" style={{ color: "var(--color-surface-200)" }}>
-              <path d="M12 2L2 7L2 17L12 22L22 17L22 7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            {/* Inner Gear (Cream) */}
-            <Settings size={12} className="absolute" style={{ color: "var(--color-surface-50)" }} strokeWidth={2.5} />
-            {/* Accent dot (Tan/Sand) */}
-            <div className="absolute top-1.5 right-1.5 w-[5px] h-[5px] rounded-full" style={{ backgroundColor: "var(--color-surface-300)" }} />
+          <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center">
+            <img src="/logo.svg" alt="PLM Logo" className="w-full h-full object-contain" />
           </div>
           
           {(!collapsed || mobileMenuOpen) && (
@@ -127,10 +120,19 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen, collapsed, 
 
       {/* Nav */}
       <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
-        {filteredNav.map((item) => {
-          const Icon = item.icon;
-          const isActive = item.to === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(item.to);
-          return (
+        {(() => {
+          const activeNavTo = filteredNav.reduce((best, item) => {
+            if (item.to === '/dashboard') return location.pathname === '/dashboard' ? item.to : best;
+            if (location.pathname === item.to || location.pathname.startsWith(item.to + '/')) {
+              if (!best || item.to.length > best.length) return item.to;
+            }
+            return best;
+          }, '');
+
+          return filteredNav.map((item) => {
+            const Icon = item.icon;
+            const isActive = item.to === activeNavTo;
+            return (
             <NavLink
               key={item.to}
               to={item.to}
@@ -151,7 +153,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen, collapsed, 
                 )}
             </NavLink>
           );
-        })}
+        })})()}
       </nav>
 
       <div className="p-3 border-t border-surface-200 hidden lg:block">

@@ -54,4 +54,6 @@ bomSchema.virtual('id').get(function() {
   return this._id;
 });
 
+bomSchema.index({ name: 'text' });
+
 module.exports = mongoose.model('BOM', bomSchema);

@@ -85,8 +85,8 @@ export default function Hero() {
 
         {/* Badge */}
         <div ref={badgeRef} className="inline-flex items-center gap-2 mb-8 opacity-0">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-medium text-teal-400 cursor-pointer group hover:bg-white/5 transition-colors">
-            <span className="text-teal-400 drop-shadow-[0_0_8px_rgba(45,212,191,0.5)]">✦</span>
+          <div className="flex items-center gap-2 px-4 py-2 rounded-full glass text-sm font-semibold text-[#312E24] cursor-pointer group hover:bg-white/40 transition-colors">
+            <span className="text-[#312E24] drop-shadow-[0_0_8px_rgba(49,46,36,0.3)]">✦</span>
             Introducing PLM Flow v1.0
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </div>
@@ -126,9 +126,9 @@ export default function Hero() {
             </TealButton>
           </Link>
           <button className="flex items-center justify-center gap-2 px-8 py-4 rounded-full glass
-            text-slate-900 font-semibold text-lg transition-all duration-200
-            hover:border-teal-500/50 hover:bg-white/5 active:scale-95 group">
-            <Play size={18} className="text-teal-400 group-hover:scale-110 transition-transform" />
+            text-[#312E24] font-semibold text-lg transition-all duration-200
+            hover:border-[#312E24]/50 hover:bg-[#312E24]/5 active:scale-95 group">
+            <Play size={18} className="text-[#312E24] group-hover:scale-110 transition-transform" />
             Watch Demo
           </button>
         </div>
@@ -156,9 +156,9 @@ export default function Hero() {
             }}>
             {/* Window controls mockup */}
             <div className="flex gap-2 mb-4">
-              <div className="w-3 h-3 rounded-full bg-slate-700/50" />
-              <div className="w-3 h-3 rounded-full bg-slate-700/50" />
-              <div className="w-3 h-3 rounded-full bg-slate-700/50" />
+              <div className="w-3 h-3 rounded-full bg-surface-500/50" />
+              <div className="w-3 h-3 rounded-full bg-surface-500/50" />
+              <div className="w-3 h-3 rounded-full bg-surface-500/50" />
             </div>
             
             {/* Mock Kanban board */}
@@ -170,19 +170,19 @@ export default function Hero() {
                 { stage: 'Done', color: '#10B981', ecos: ['ECO-078: v2 applied', 'ECO-079: Optimize'] },
               ].map(col => (
                 <div key={col.stage} className="flex-1 min-w-[200px]">
-                  <div className="flex items-center gap-2 mb-3 px-2 border-b border-white/5 pb-2">
+                  <div className="flex items-center gap-2 mb-3 px-2 border-b border-surface-400/20 pb-2">
                     <div className="w-2.5 h-2.5 rounded-full shadow-sm" style={{ background: col.color }} />
-                    <span className="text-sm font-semibold tracking-wide text-slate-300">{col.stage}</span>
-                    <span className="ml-auto text-xs font-bold bg-white/5 px-2 py-0.5 rounded text-slate-500">{col.ecos.length}</span>
+                    <span className="text-sm font-semibold tracking-wide text-surface-900">{col.stage}</span>
+                    <span className="ml-auto text-xs font-bold bg-surface-900/10 px-2 py-0.5 rounded text-surface-900">{col.ecos.length}</span>
                   </div>
                   <div className="space-y-3">
                     {col.ecos.map(eco => (
                       <div key={eco}
-                        className="p-3.5 rounded-xl text-xs font-medium bg-white/5 border border-white/5 shadow-sm
-                          hover:border-white/10 hover:bg-white/10 transition-all cursor-default relative overflow-hidden group">
-                        <div className="absolute left-0 top-0 bottom-0 w-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: col.color }} />
-                        <span className="block text-slate-200 mb-1 font-mono">{eco.split(':')[0]}</span>
-                        <span className="block text-slate-400 truncate">{eco.split(':')[1]}</span>
+                        className="p-3.5 rounded-xl text-xs font-medium bg-white/40 border border-white/40 shadow-[0_2px_10px_rgba(0,0,0,0.02)]
+                          hover:border-surface-400/30 hover:bg-white/60 transition-all cursor-default relative overflow-hidden group">
+                        <div className="absolute left-0 top-0 bottom-0 w-1 opacity-100 transition-opacity" style={{ background: col.color }} />
+                        <span className="block text-surface-900 mb-1 font-mono font-bold">{eco.split(':')[0]}</span>
+                        <span className="block text-surface-700 truncate">{eco.split(':')[1]}</span>
                       </div>
                     ))}
                   </div>

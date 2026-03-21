@@ -1,8 +1,8 @@
 :root {
   --bg-glass: rgba(255, 255, 255, 0.4);
   --border-subtle: rgba(0,0,0,0.06);
-  --border-glow: rgba(13, 148, 136, 0.4);
-  --teal-glow: rgba(45, 212, 191, 0.15);
+  --border-glow: rgba(138, 130, 109, 0.4); /* primary-600 */
+  --teal-glow: rgba(190, 179, 158, 0.15); /* primary-400 */
 }
 
 * { box-sizing: border-box; }
@@ -11,8 +11,8 @@
    Do NOT add cursor:none here — it leaks to dashboard/login */
 
 body.landing-page {
-  background: #EADBC8;
-  color: #0F172A;
+  background: var(--color-surface-50);
+  color: var(--color-surface-900);
   font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
 }
@@ -25,14 +25,14 @@ body.landing-page {
 }
 
 .text-gradient {
-  background: linear-gradient(135deg, #2DD4BF, #0D9488);
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-400));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .glow-teal {
-  box-shadow: 0 0 30px rgba(13,148,136,0.4);
+  box-shadow: 0 0 30px rgba(138, 130, 109, 0.4);
 }
 
 .card-hover {

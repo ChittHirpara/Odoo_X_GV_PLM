@@ -18,7 +18,7 @@ export default function TealButton({
     inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-200
     active:scale-95 hover:scale-[1.02] cursor-pointer
     ${sizeClasses[size]}
-    ${glow ? 'hover:shadow-[0_0_30px_rgba(13,148,136,0.6)]' : ''}
+    ${glow ? 'hover:shadow-[0_0_30px_rgba(138,130,109,0.5)]' : ''}
     ${className}
   `
 
@@ -26,7 +26,7 @@ export default function TealButton({
     return (
       <button 
         onClick={onClick}
-        className={`${baseClasses} bg-transparent text-teal-400 border border-teal-500/50 hover:bg-teal-500/10 hover:border-teal-400`}
+        className={`${baseClasses} bg-transparent text-[#312E24] border border-[#312E24]/40 hover:bg-[#312E24] hover:text-[#FAF8F5]`}
       >
         {children}
       </button>
@@ -36,7 +36,7 @@ export default function TealButton({
   return (
     <button 
       onClick={onClick}
-      className={`${baseClasses} bg-teal-gradient text-white border border-teal-400/20`}
+      className={`${baseClasses} bg-[#312E24] text-[#FAF8F5] shadow-md hover:bg-[#504A3C] border border-[#312E24]`}
     >
       {children}
     </button>

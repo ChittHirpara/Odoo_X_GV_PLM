@@ -80,4 +80,6 @@ productSchema.virtual('id').get(function() {
   return this._id;
 });
 
+productSchema.index({ name: 'text', sku: 'text' });
+
 module.exports = mongoose.model('Product', productSchema);

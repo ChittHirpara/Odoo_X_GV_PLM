@@ -8,13 +8,13 @@ import { Bell, Search, ChevronDown, Check, Menu } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
 import { useNavigate } from 'react-router-dom';
 import { users } from '../../data/mockData';
+import GlobalSearch from '../search/GlobalSearch';
 
 export default function Topbar({ setMobileMenuOpen }) {
   const { currentUser, switchRole, notificationList, markNotificationRead } = useApp();
   const [showNotif, setShowNotif] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
-  const [showMobileSearch, setShowMobileSearch] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
   const notifRef = useRef(null);
   const userRef = useRef(null);
   const navigate = useNavigate();
@@ -49,25 +49,24 @@ export default function Topbar({ setMobileMenuOpen }) {
         </button>
 
         {/* Search */}
-        <div className={`relative flex-1 ${showMobileSearch ? 'flex' : 'hidden sm:block'}`}>
+        <div className={`relative flex-1 block`}>
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-surface-400" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search products, BoMs..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-700 placeholder:text-surface-400 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition-all"
-            autoFocus={showMobileSearch}
-          />
+          <button
+            onClick={() => setShowGlobalSearch(true)}
+            className="w-full text-left pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-surface-50 text-sm text-surface-400 focus:outline-none hover:border-primary-300 hover:bg-white transition-all flex justify-between items-center"
+          >
+            <span>Search ECOs, Products, BoMs...</span>
+            <kbd className="hidden sm:inline-block text-[10px] font-mono bg-white border border-slate-200 rounded px-1.5 py-0.5 shadow-sm text-slate-400">⌘K</kbd>
+          </button>
         </div>
       </div>
 
       {/* Right side */}
-      <div className={`flex items-center gap-2 sm:gap-4 ml-4 ${showMobileSearch ? 'hidden' : 'flex'}`}>
+      <div className={`flex items-center gap-2 sm:gap-4 ml-4 flex`}>
         
         {/* Mobile Search Toggle */}
         <button
-          onClick={() => setShowMobileSearch(true)}
+          onClick={() => setShowGlobalSearch(true)}
           className="sm:hidden p-2 text-surface-500 hover:bg-surface-50 rounded-lg"
         >
           <Search size={20} />
@@ -170,6 +169,8 @@ export default function Topbar({ setMobileMenuOpen }) {
           )}
         </div>
       </div>
+
+      <GlobalSearch open={showGlobalSearch} setOpen={setShowGlobalSearch} />
     </header>
   );
 }

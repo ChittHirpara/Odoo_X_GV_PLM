@@ -119,17 +119,18 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
     const currentStage = eco.stage;
 
     const validTransitions = {
-      'New': ['In Review'],
+      'New': ['In Review', 'Approval'],
       'In Review': ['Approval'],
-      'Approval': ['Done'],
-      'Rejected': ['In Review']
+      'Approval': ['Done', 'New'] // New represents 'Rejected' status in the frontend currently
     };
 
     if (!validTransitions[currentStage] || !validTransitions[currentStage].includes(stage)) {
-      return res.status(400).json({
-        success: false,
-        message: `Cannot transition from '${currentStage}' to '${stage}'`
-      });
+      if (currentStage !== stage) {
+        return res.status(400).json({
+          success: false,
+          message: `Cannot transition from '${currentStage}' to '${stage}'`
+        });
+      }
     }
 
     if ((stage === 'In Review' || stage === 'Approval') && !['Admin', 'Engineering User'].includes(userRole)) {
@@ -162,6 +163,8 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
     });
 
     eco.stage = stage;
+    eco.stageEnteredAt = new Date();
+    eco.slaEscalated = false;
     await eco.save();
 
     res.json({ success: true, data: eco });

@@ -32,12 +32,17 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 group relative z-50">
-          <div className="w-8 h-8 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center shadow-lg group-hover:border-teal-500/50 transition-colors">
-            <Settings size={18} className="text-teal-400 group-hover:rotate-90 transition-transform duration-500" />
+          <div className="w-10 h-10 flex items-center justify-center transition-transform hover:scale-105 duration-300">
+            <img src="/logo.svg" alt="PLM Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-900 flex gap-1">
-            PLM <span className="text-teal-600">Flow</span>
-          </span>
+          <div className="flex flex-col justify-center">
+            <span className="text-xl leading-none font-extrabold text-primary-900 tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
+              PLM
+            </span>
+            <span className="text-[10px] leading-tight text-[#a19982] font-bold tracking-widest uppercase mt-0.5">
+              Change Control
+            </span>
+          </div>
         </Link>
 
         {/* Desktop Nav */}

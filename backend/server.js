@@ -15,6 +15,11 @@ const approvalRuleRoutes = require('./src/routes/approvalRules');
 const activityRoutes = require('./src/routes/activities');
 const dashboardRoutes = require('./src/routes/dashboard');
 const settingsRoutes = require('./src/routes/settings');
+const impactRouter = require('./src/routes/impact');
+const slaRouter = require('./src/routes/sla');
+const exportRouter = require('./src/routes/export');
+const searchRouter = require('./src/routes/search');
+const { startSLAMonitor } = require('./src/services/slaService');
 
 const app = express();
 
@@ -37,6 +42,10 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/boms', bomRoutes);
 app.use('/api/ecos', ecoRoutes);
+app.use('/api/ecos', impactRouter);
+app.use('/api/ecos', slaRouter);
+app.use('/api/ecos', exportRouter);
+app.use('/api', searchRouter);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/approval-rules', approvalRuleRoutes);

@@ -4,7 +4,7 @@
 //  15 routes total, animated with Framer Motion               //
 // ============================================================//
 import { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import { AppProvider } from './context/AppContext';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
@@ -81,6 +81,9 @@ function AppLayout() {
 
   // Login page — public, no sidebar/topbar
   if (location.pathname === '/login') {
+    if (isAuthenticated) {
+      return <Navigate to="/dashboard" replace />;
+    }
     return <Login />;
   }
 

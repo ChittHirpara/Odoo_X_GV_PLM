@@ -10,9 +10,12 @@ import DiffView from '../components/ui/DiffView';
 import StageProgress from '../components/ui/StageProgress';
 import ImageDiffView from '../components/ui/ImageDiffView';
 import ImagePreviewModal from '../components/ui/ImagePreviewModal';
+import ImpactPredictor from '../components/ECO/ImpactPredictor';
+import SLATimer from '../components/ECO/SLATimer';
+import ExportPDFButton from '../components/ECO/ExportPDFButton';
 import { ArrowLeft, User, Calendar, FileText, Clock, CheckCircle, XCircle, Send, AlertCircle, MessageSquare, ImageIcon, Paperclip } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function EcoDetail() {
   const { id } = useParams();
@@ -22,6 +25,26 @@ export default function EcoDetail() {
   const [showConfirm, setShowConfirm] = useState(null);
   const [previewImages, setPreviewImages] = useState(null);
   const [previewIndex, setPreviewIndex] = useState(0);
+  const [slaData, setSlaData] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSla = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3000/api/ecos/sla/status', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success && isMounted) {
+          const match = json.data.find(d => d.ecoId === eco?.id || d.ecoId === eco?._id);
+          if (match) setSlaData(match);
+        }
+      } catch (err) { }
+    };
+    if (eco) fetchSla();
+    return () => { isMounted = false; };
+  }, [eco?.id]);
 
   if (!eco) {
     return (
@@ -96,7 +119,10 @@ export default function EcoDetail() {
             </div>
             <h1 className="text-2xl font-bold text-surface-800">{eco.title}</h1>
           </div>
-          <StatusBadge status={eco.stage} size="lg" />
+          <div className="flex flex-col items-end gap-3">
+            <StatusBadge status={eco.stage} size="lg" />
+            <ExportPDFButton eco={eco} />
+          </div>
         </div>
         {eco.description && (
           <p className="text-sm text-surface-600 leading-relaxed mb-6">{eco.description}</p>
@@ -140,6 +166,21 @@ export default function EcoDetail() {
           </div>
         )}
       </motion.div>
+
+      {/* SLA Timer detail view */}
+      {slaData && (
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <SLATimer
+            enteredAt={slaData.enteredAt}
+            stage={slaData.stage}
+            slaStatus={slaData.slaStatus}
+            percentageUsed={slaData.percentageUsed}
+            warnThreshold={slaData.warnThreshold}
+            escalateThreshold={slaData.escalateThreshold}
+            compact={false}
+          />
+        </motion.div>
+      )}
 
       {/* Stage Progress */}
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
@@ -231,24 +272,12 @@ export default function EcoDetail() {
 
             {/* Approve / Reject (Approver/Admin, stage is Approval) */}
             {canApprove && eco.stage === 'Approval' && (
-              <div className="flex flex-col sm:flex-row gap-4 w-full mt-2">
-                <button
-                  onClick={() => setShowConfirm('approve')}
-                  className="flex-1 flex flex-col items-center justify-center gap-2 py-6 bg-success-50 text-success-700 hover:bg-success-600 hover:text-white border-2 border-success-200 hover:border-success-600 rounded-xl transition-all shadow-sm group"
-                >
-                  <CheckCircle size={32} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-lg font-bold">Approve Request</span>
-                  <span className="text-xs font-medium opacity-80 text-center px-4">Apply these changes permanently to production</span>
-                </button>
-                <button
-                  onClick={() => setShowConfirm('reject')}
-                  className="flex-1 flex flex-col items-center justify-center gap-2 py-6 bg-danger-50 text-danger-700 hover:bg-danger-600 hover:text-white border-2 border-danger-200 hover:border-danger-600 rounded-xl transition-all shadow-sm group"
-                >
-                  <XCircle size={32} className="group-hover:scale-110 transition-transform" />
-                  <span className="text-lg font-bold">Reject Request</span>
-                  <span className="text-xs font-medium opacity-80 text-center px-4">Send back to Engineering for revisions</span>
-                </button>
-              </div>
+              <ImpactPredictor
+                ecoId={eco.id}
+                eco={eco}
+                onApprove={() => setShowConfirm('approve')}
+                onReject={() => setShowConfirm('reject')}
+              />
             )}
 
             {/* No action available info */}

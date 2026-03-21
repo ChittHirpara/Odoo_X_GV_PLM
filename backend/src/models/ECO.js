@@ -119,7 +119,9 @@ const ecoSchema = new mongoose.Schema({
   changes: [changeSchema],
   attachedImages: [attachedImageSchema],
   imageChanges: [imageChangeSchema],
-  approvalLogs: [approvalLogSchema]
+  approvalLogs: [approvalLogSchema],
+  stageEnteredAt: { type: Date, default: Date.now },
+  slaEscalated: { type: Boolean, default: false }
 }, {
   _id: false,
   timestamps: false,
@@ -130,5 +132,7 @@ const ecoSchema = new mongoose.Schema({
 ecoSchema.virtual('id').get(function() {
   return this._id;
 });
+
+ecoSchema.index({ title: 'text', ecoNumber: 'text', description: 'text' });
 
 module.exports = mongoose.model('ECO', ecoSchema);

@@ -8,13 +8,16 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import StatusBadge from '../components/ui/StatusBadge';
 import EmptyState from '../components/ui/EmptyState';
+import SLATimer from '../components/ECO/SLATimer';
 import { Search, FileText, Plus, ArrowUpRight, Filter, Paperclip } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 
 export default function EcoList() {
   const { ecoList, canCreateEco } = useApp();
   const [search, setSearch] = useState('');
   const [stageFilter, setStageFilter] = useState('All');
+  const [slaData, setSlaData] = useState({});
 
   const stages = ['All', 'New', 'In Review', 'Approval', 'Done'];
 
@@ -25,6 +28,26 @@ export default function EcoList() {
     const matchesStage = stageFilter === 'All' || eco.stage === stageFilter;
     return matchesSearch && matchesStage;
   });
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchSla = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const res = await fetch('http://localhost:3000/api/ecos/sla/status', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const json = await res.json();
+        if (json.success && isMounted) {
+          const map = {};
+          json.data.forEach(d => { map[d.ecoId] = d; });
+          setSlaData(map);
+        }
+      } catch (err) { }
+    };
+    fetchSla();
+    return () => { isMounted = false; };
+  }, [ecoList]);
 
   return (
     <div className="space-y-6">
@@ -130,8 +153,19 @@ export default function EcoList() {
                   <td className="px-6 py-4">
                     <span className="text-sm text-surface-500">{eco.productName}</span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 flex flex-col items-start gap-1">
                     <StatusBadge status={eco.stage} />
+                    {slaData[eco._id || eco.id] && (
+                      <div className="mt-1">
+                        <SLATimer
+                          enteredAt={slaData[eco._id || eco.id].enteredAt}
+                          stage={eco.stage}
+                          slaStatus={slaData[eco._id || eco.id].slaStatus}
+                          percentageUsed={slaData[eco._id || eco.id].percentageUsed}
+                          compact={true}
+                        />
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge status={eco.priority} />

@@ -66,18 +66,14 @@ export default function Login() {
         >
           {/* Logo */}
           <div className="flex items-center gap-3 mb-10">
-            <div className="w-9 h-9 flex-shrink-0 bg-primary-900 rounded-xl flex items-center justify-center relative shadow-sm border border-primary-800">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute text-surface-200">
-                <path d="M12 2L2 7L2 17L12 22L22 17L22 7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <Settings size={12} className="absolute text-surface-50" strokeWidth={2.5} />
-              <div className="absolute top-1.5 right-1.5 w-[5px] h-[5px] rounded-full bg-surface-300" />
+            <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center">
+              <img src="/logo.svg" alt="PLM Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col justify-center">
               <span className="text-[20px] leading-none font-extrabold text-primary-900 tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
                 PLM
               </span>
-              <span className="text-[9px] leading-tight text-surface-500 font-bold tracking-widest uppercase mt-0.5">
+              <span className="text-[9px] leading-tight text-[#a19982] font-bold tracking-widest uppercase mt-0.5">
                 Change Control
               </span>
             </div>
@@ -273,13 +269,17 @@ export default function Login() {
             <div className="flex flex-col items-center gap-1.5 mb-6">
               <p className="text-[13px] font-medium text-surface-400 text-center">Make your lifecycle easier and organized with</p>
               <div className="flex items-center gap-2.5">
-                <div className="w-7 h-7 flex-shrink-0 bg-primary-900 rounded-lg flex items-center justify-center relative shadow-sm border border-primary-800">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute text-surface-200">
-                    <path d="M12 2L2 7L2 17L12 22L22 17L22 7L12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                  <Settings size={9} className="absolute text-surface-50" strokeWidth={2.5} />
+                <div className="w-8 h-8 flex-shrink-0 flex items-center justify-center">
+                  <img src="/logo.svg" alt="PLM Logo" className="w-full h-full object-contain" />
                 </div>
-                <span className="text-xl font-extrabold tracking-tight text-primary-900" style={{ fontFamily: "'Inter', sans-serif" }}>PLM</span>
+                <div className="flex flex-col justify-center">
+                  <span className="text-xl leading-none font-extrabold text-primary-900 tracking-tight" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    PLM
+                  </span>
+                  <span className="text-[10px] leading-tight text-[#a19982] font-bold tracking-widest uppercase mt-0.5">
+                    Change Control
+                  </span>
+                </div>
               </div>
             </div>
 
