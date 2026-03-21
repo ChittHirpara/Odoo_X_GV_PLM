@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import Sidebar from './components/layout/Sidebar';
 import Topbar from './components/layout/Topbar';
 import Dashboard from './pages/Dashboard';
+import LandingPage from './pages/LandingPage';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import BillOfMaterials from './pages/BillOfMaterials';
@@ -32,7 +33,8 @@ function AnimatedRoutes() {
         transition={{ duration: 0.2 }}
       >
         <Routes location={location}>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/bom" element={<BillOfMaterials />} />
@@ -55,6 +57,11 @@ function AnimatedRoutes() {
 function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
+
+  if (location.pathname === '/' || location.pathname === '/login') {
+    return <AnimatedRoutes />;
+  }
 
   return (
     <div className="min-h-[100dvh] bg-surface-50 flex flex-col sm:block">
