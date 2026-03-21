@@ -380,7 +380,7 @@ export default function EcoDetail() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-0.5">
-                      <span className="text-sm font-medium text-surface-700">{log.user}</span>
+                      <span className="text-sm font-medium text-surface-700">{log.user_name || log.user}</span>
                       <span className={`text-xs font-semibold ${
                         isApproved ? 'text-success-600' : isRejected ? 'text-danger-600' : 'text-primary-600'
                       }`}>{log.action}</span>

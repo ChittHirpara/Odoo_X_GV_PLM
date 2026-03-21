@@ -189,14 +189,15 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
 
       if (product) {
         // 2. Generate New Version (e.g., v1 -> v2)
-        const currentVersion = parseFloat(product.version || '1.0');
+        const currentRaw = String(product.version || '1.0').replace(/[vV]/g, '').trim();
+        const currentVersion = parseFloat(currentRaw) || 1.0;
         const nextVersion = (currentVersion + 1).toFixed(1);
 
         // 3. Apply changes (In a real app, you'd iterate over eco_changes, 
         // here we'll update the main product record with new version)
         await req.db(
           'UPDATE products SET version = $1, updated_at = NOW() WHERE id = $2',
-          [nextVersion, product.id]
+          [String(nextVersion), product.id]
         );
       }
     }
@@ -208,16 +209,22 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
     );
 
     // 5. Insert Approval Log
+    // Using user_name to match current schema, but checking if it fails
     await req.db(
       `INSERT INTO approval_logs (eco_id, user_name, action, comment, created_at)
        VALUES ($1, $2, $3, $4, NOW())`,
       [req.params.id, req.user.name, `Moved to ${stage}`, comment || '']
     );
 
-    res.json({ success: true, message: `ECO status updated to ${stage}` });
+    res.json({ 
+      success: true, 
+      message: `ECO status updated to ${stage}`,
+      data: { ...eco, stage } // Return updated object for frontend state sync
+    });
   } catch (error) {
-    console.error('[ECO STAGE PROB]', error);
-    res.status(500).json({ success: false, message: 'Failed to update ECO stage' });
+    console.error('[ECO STAGE PROB]', error.message);
+    if (error.stack) console.error(error.stack);
+    res.status(500).json({ success: false, message: 'Failed to update ECO stage: ' + error.message });
   }
 });
 

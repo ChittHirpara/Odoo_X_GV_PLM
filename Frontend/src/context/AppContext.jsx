@@ -45,13 +45,22 @@ export function AppProvider({ children }) {
         fetch(`${apiBase}/notifications`, { headers })
       ]);
 
-      if (prodRes.ok) setProducts((await prodRes.json()).data || []);
-      if (bomRes.ok) setBomList((await bomRes.json()).data || []);
-      if (ecoRes.ok) {
-        const ecoData = await ecoRes.json();
-        setEcoList((ecoData.data || []).filter(Boolean));
+      if (prodRes.ok) {
+        const prodData = await prodRes.json().catch(() => ({ data: [] }));
+        setProducts(prodData?.data || []);
       }
-      if (notifRes.ok) setNotificationList((await notifRes.json()).data || []);
+      if (bomRes.ok) {
+        const bomData = await bomRes.json().catch(() => ({ data: [] }));
+        setBomList(bomData?.data || []);
+      }
+      if (ecoRes.ok) {
+        const ecoData = await ecoRes.json().catch(() => ({ data: [] }));
+        setEcoList((ecoData?.data || []).filter(Boolean));
+      }
+      if (notifRes.ok) {
+        const notifData = await notifRes.json().catch(() => ({ data: [] }));
+        setNotificationList(notifData?.data || []);
+      }
     } catch (err) {
       console.error('Failed to fetch data from backend', err);
     }

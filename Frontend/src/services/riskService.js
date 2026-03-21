@@ -12,10 +12,13 @@ import { API_BASE_URL } from '../config/api';
  */
 export const analyzeRisk = async (ecoId, token) => {
   try {
+    const activeToken = token || await secureGet('token');
+    if (!activeToken) throw new Error('No authentication token found');
+
     const res = await fetch(`${API_BASE_URL}/ecos/${ecoId}/risk`, {
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${activeToken}`
       }
     });
 
