@@ -6,7 +6,7 @@ const AppContext = createContext(null);
 export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(users[0]);
   const [products] = useState(initialProducts);
-  const [bomList] = useState(initialBoms);
+  const [bomList, setBomList] = useState(initialBoms);
   const [ecoList, setEcoList] = useState(initialEcos);
   const [notificationList, setNotificationList] = useState(initialNotifications);
 
@@ -20,6 +20,24 @@ export function AppProvider({ children }) {
   const canApprove = currentUser.role === ROLES.APPROVER || currentUser.role === ROLES.ADMIN;
   const canAccessSettings = currentUser.role === ROLES.ADMIN;
   const isReadOnly = currentUser.role === ROLES.OPERATIONS;
+
+  const addBom = useCallback((bom) => {
+    const newBom = {
+      ...bom,
+      id: `bom${Date.now()}`,
+      version: '1',
+      status: 'Draft',
+      createdAt: new Date().toISOString().slice(0, 10),
+      components: (bom.components || []).map(c => ({
+        ...c,
+        unit: c.unit || 'pcs',
+        cost: c.cost || 0
+      })),
+      operations: bom.operations || []
+    };
+    setBomList(prev => [newBom, ...prev]);
+    return newBom;
+  }, []);
 
   const addEco = useCallback((eco) => {
     const newEco = {
@@ -92,6 +110,7 @@ export function AppProvider({ children }) {
     bomList,
     ecoList,
     addEco,
+    addBom,
     updateEcoStage,
     rejectEco,
     updateEcoImages,

@@ -27,7 +27,7 @@ export default function Card({ title, value, subtitle, icon: Icon, color = 'prim
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm font-medium text-surface-500 mb-1">{title}</p>
-          <p className="text-3xl font-bold text-surface-800 tracking-tight">{value}</p>
+          <p className="text-3xl font-bold font-mono text-surface-800 tracking-tight">{value}</p>
           {subtitle && <p className="text-xs text-surface-400 mt-1">{subtitle}</p>}
         </div>
         {Icon && (

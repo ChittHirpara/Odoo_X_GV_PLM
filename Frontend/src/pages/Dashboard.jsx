@@ -6,12 +6,23 @@ import StatusBadge from '../components/ui/StatusBadge';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
 const activityIcons = {
   eco_created: { icon: FileText, color: 'text-blue-500', bg: 'bg-blue-50' },
   eco_submitted: { icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50' },
   eco_approved: { icon: CheckCircle, color: 'text-success-500', bg: 'bg-success-50' },
   product_updated: { icon: GitBranch, color: 'text-purple-500', bg: 'bg-purple-50' },
 };
+
+const ecoVelocityData = [
+  { month: 'Oct', created: 12, resolved: 8 },
+  { month: 'Nov', created: 19, resolved: 14 },
+  { month: 'Dec', created: 15, resolved: 22 },
+  { month: 'Jan', created: 28, resolved: 18 },
+  { month: 'Feb', created: 22, resolved: 26 },
+  { month: 'Mar', created: 35, resolved: 31 },
+];
 
 export default function Dashboard() {
   const { products, bomList, ecoList } = useApp();
@@ -36,6 +47,57 @@ export default function Dashboard() {
         <Card title="Pending ECOs" value={pendingEcos} subtitle="Awaiting action" icon={AlertCircle} color="warning" delay={2} />
         <Card title="Completed ECOs" value={approvedEcos} subtitle="Applied to production" icon={CheckCircle} color="purple" delay={3} />
       </div>
+
+      {/* Chart Section */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden hidden sm:block p-6"
+      >
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-base font-bold text-surface-800 tracking-tight">ECO Velocity (Last 6 Months)</h2>
+            <p className="text-xs text-surface-500 mt-1 font-medium">Trends in Change Order creation vs resolution</p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-sm bg-primary-800" />
+              <span className="text-xs font-semibold text-surface-600">Created</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-3 h-3 rounded-sm bg-[#DAC0A3]" />
+              <span className="text-xs font-semibold text-surface-600">Resolved</span>
+            </div>
+          </div>
+        </div>
+        <div className="h-[280px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={ecoVelocityData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <defs>
+                <linearGradient id="colorCreated" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#0F2C59" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#0F2C59" stopOpacity={0}/>
+                </linearGradient>
+                <linearGradient id="colorResolved" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#DAC0A3" stopOpacity={0.3}/>
+                  <stop offset="95%" stopColor="#DAC0A3" stopOpacity={0}/>
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--color-surface-200)" />
+              <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-surface-500)', fontWeight: 500 }} dy={10} />
+              <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: 'var(--color-surface-500)', fontWeight: 500 }} />
+              <Tooltip 
+                contentStyle={{ backgroundColor: 'var(--color-surface-50)', borderRadius: '12px', border: '1px solid var(--color-surface-200)', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                itemStyle={{ fontSize: 13, fontWeight: 600 }}
+                labelStyle={{ fontSize: 12, color: 'var(--color-surface-500)', marginBottom: 4 }}
+              />
+              <Area type="monotone" dataKey="created" name="Created" stroke="#0F2C59" strokeWidth={3} fillOpacity={1} fill="url(#colorCreated)" />
+              <Area type="monotone" dataKey="resolved" name="Resolved" stroke="#DAC0A3" strokeWidth={3} fillOpacity={1} fill="url(#colorResolved)" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
+      </motion.div>
 
       {/* Two columns: Recent ECOs + Activity Timeline */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">

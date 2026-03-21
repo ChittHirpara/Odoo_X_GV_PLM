@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import StatusBadge from '../components/ui/StatusBadge';
 import EmptyState from '../components/ui/EmptyState';
-import { Search, Layers, ArrowUpRight } from 'lucide-react';
+import { Search, Layers, ArrowUpRight, Plus } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function BillOfMaterials() {
-  const { bomList } = useApp();
+  const { bomList, canCreateEco } = useApp();
   const [search, setSearch] = useState('');
 
   const filtered = bomList.filter(b =>
@@ -16,9 +16,19 @@ export default function BillOfMaterials() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-surface-800 tracking-tight">Bills of Materials</h1>
-        <p className="text-sm text-surface-500 mt-1">Component structures and manufacturing operations</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-surface-800 tracking-tight">Bills of Materials</h1>
+          <p className="text-sm text-surface-500 mt-1">Component structures and manufacturing operations</p>
+        </div>
+        {canCreateEco && (
+          <Link
+            to="/bom/create"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm hover:shadow-md"
+          >
+            <Plus size={16} /> New BoM
+          </Link>
+        )}
       </div>
 
       {/* Search */}

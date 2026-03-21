@@ -33,7 +33,7 @@ export default function Topbar({ setMobileMenuOpen }) {
   };
 
   return (
-    <header className="h-16 bg-surface-100 border-b border-surface-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+    <header className="h-16 bg-surface-50/80 backdrop-blur-md shadow-sm border-b border-surface-200/50 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30 transition-all">
       <div className="flex items-center gap-3 w-full max-w-md">
         {/* Mobile Menu Toggle */}
         <button

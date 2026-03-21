@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import BillOfMaterials from './pages/BillOfMaterials';
+import CreateBom from './pages/CreateBom';
 import BomDetail from './pages/BomDetail';
 import EcoList from './pages/EcoList';
 import CreateEco from './pages/CreateEco';
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
           <Route path="/products" element={<Products />} />
           <Route path="/products/:id" element={<ProductDetail />} />
           <Route path="/bom" element={<BillOfMaterials />} />
+          <Route path="/bom/create" element={<CreateBom />} />
           <Route path="/bom/:id" element={<BomDetail />} />
           <Route path="/eco" element={<EcoList />} />
           <Route path="/eco/create" element={<CreateEco />} />

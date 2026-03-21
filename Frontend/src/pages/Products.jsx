@@ -99,7 +99,7 @@ export default function Products() {
                     <span className="text-sm text-surface-500">{product.category}</span>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm font-semibold text-surface-700">v{product.version}</span>
+                    <span className="text-sm font-semibold font-mono text-surface-700">v{product.version}</span>
                   </td>
                   <td className="px-6 py-4">
                     <StatusBadge status={product.status} />
@@ -145,7 +145,7 @@ export default function Products() {
                   </div>
                   <div>
                     <p className="text-[10px] text-surface-400 font-semibold uppercase tracking-wider">Version</p>
-                    <p className="text-sm text-surface-700 font-medium">v{product.version}</p>
+                    <p className="text-sm text-surface-700 font-medium font-mono">v{product.version}</p>
                   </div>
                 </div>
 
