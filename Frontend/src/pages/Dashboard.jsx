@@ -44,7 +44,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="lg:col-span-3 bg-white rounded-xl border border-surface-200 overflow-hidden"
+          className="lg:col-span-3 bg-surface-100 rounded-xl border border-surface-200 overflow-hidden"
         >
           <div className="px-6 py-4 border-b border-surface-100 flex items-center justify-between">
             <h2 className="text-base font-semibold text-surface-800">Active Change Orders</h2>
@@ -77,7 +77,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="lg:col-span-2 bg-white rounded-xl border border-surface-200 overflow-hidden"
+          className="lg:col-span-2 bg-surface-100 rounded-xl border border-surface-200 overflow-hidden"
         >
           <div className="px-6 py-4 border-b border-surface-100">
             <h2 className="text-base font-semibold text-surface-800">Recent Activity</h2>

@@ -55,12 +55,12 @@ export default function ImagePreviewModal({ images, initialIndex = 0, isOpen, on
               <p className="text-xs text-white/60">{currentImage.category} · {currentIndex + 1} of {images.length}</p>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"><ZoomOut size={18} /></button>
+              <button onClick={() => setZoom(z => Math.max(0.25, z - 0.25))} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-surface-100/10 transition-colors"><ZoomOut size={18} /></button>
               <span className="text-xs text-white/50 w-12 text-center">{Math.round(zoom * 100)}%</span>
-              <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"><ZoomIn size={18} /></button>
-              <button onClick={() => setRotation(r => (r + 90) % 360)} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"><RotateCw size={18} /></button>
-              <div className="w-px h-5 bg-white/20 mx-1" />
-              <button onClick={onClose} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors"><X size={18} /></button>
+              <button onClick={() => setZoom(z => Math.min(4, z + 0.25))} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-surface-100/10 transition-colors"><ZoomIn size={18} /></button>
+              <button onClick={() => setRotation(r => (r + 90) % 360)} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-surface-100/10 transition-colors"><RotateCw size={18} /></button>
+              <div className="w-px h-5 bg-surface-100/20 mx-1" />
+              <button onClick={onClose} className="p-2 rounded-lg text-white/70 hover:text-white hover:bg-surface-100/10 transition-colors"><X size={18} /></button>
             </div>
           </div>
 

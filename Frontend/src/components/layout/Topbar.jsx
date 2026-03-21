@@ -33,7 +33,7 @@ export default function Topbar({ setMobileMenuOpen }) {
   };
 
   return (
-    <header className="h-16 bg-white border-b border-surface-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
+    <header className="h-16 bg-surface-100 border-b border-surface-200 flex items-center justify-between px-4 sm:px-6 sticky top-0 z-30">
       <div className="flex items-center gap-3 w-full max-w-md">
         {/* Mobile Menu Toggle */}
         <button
@@ -82,7 +82,7 @@ export default function Topbar({ setMobileMenuOpen }) {
           </button>
 
           {showNotif && (
-            <div className="absolute right-0 top-12 w-80 bg-white rounded-xl shadow-xl border border-surface-200 overflow-hidden animate-fade-in">
+            <div className="absolute right-0 top-12 w-80 bg-surface-100 rounded-xl shadow-xl border border-surface-200 overflow-hidden animate-fade-in">
               <div className="px-4 py-3 border-b border-surface-100 flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-surface-800">Notifications</h3>
                 {unreadCount > 0 && <span className="text-xs text-primary-600 font-medium">{unreadCount} new</span>}
@@ -131,7 +131,7 @@ export default function Topbar({ setMobileMenuOpen }) {
           </button>
 
           {showUserMenu && (
-            <div className="absolute right-0 top-14 w-64 bg-white rounded-xl shadow-xl border border-surface-200 overflow-hidden animate-fade-in">
+            <div className="absolute right-0 top-14 w-64 bg-surface-100 rounded-xl shadow-xl border border-surface-200 overflow-hidden animate-fade-in">
               <div className="px-4 py-3 border-b border-surface-100">
                 <p className="text-xs font-semibold text-surface-400 uppercase tracking-wider">Switch Role (Demo)</p>
               </div>

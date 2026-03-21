@@ -36,7 +36,7 @@ export default function Products() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search products..."
-            className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-surface-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
           />
         </div>
         <div className="flex gap-1 bg-surface-100 rounded-lg p-1">
@@ -46,7 +46,7 @@ export default function Products() {
               onClick={() => setStatusFilter(status)}
               className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
                 statusFilter === status
-                  ? 'bg-white text-surface-800 shadow-sm'
+                  ? 'bg-surface-100 text-surface-800 shadow-sm'
                   : 'text-surface-500 hover:text-surface-700'
               }`}
             >
@@ -63,7 +63,7 @@ export default function Products() {
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white sm:rounded-xl sm:border border-surface-200 overflow-hidden"
+          className="bg-surface-100 sm:rounded-xl sm:border border-surface-200 overflow-hidden"
         >
           {/* Desktop/Tablet Table View */}
           <div className="hidden sm:block overflow-x-auto w-full">
@@ -126,7 +126,7 @@ export default function Products() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-white border text-left border-surface-200 rounded-xl p-4 shadow-sm"
+                className="bg-surface-100 border text-left border-surface-200 rounded-xl p-4 shadow-sm"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>

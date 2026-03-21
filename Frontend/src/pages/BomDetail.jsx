@@ -39,7 +39,7 @@ export default function BomDetail() {
       </motion.div>
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-surface-200 p-6">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
         <div className="flex items-start justify-between">
           <div>
             <h1 className="text-2xl font-bold text-surface-800">{bom.name}</h1>
@@ -57,7 +57,7 @@ export default function BomDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Components Table */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 bg-white sm:rounded-xl sm:border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="lg:col-span-2 bg-surface-100 sm:rounded-xl sm:border border-surface-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
             <Wrench size={16} className="text-surface-400" />
             <h2 className="text-base font-semibold text-surface-800">Components</h2>
@@ -93,7 +93,7 @@ export default function BomDetail() {
           {/* Mobile List View */}
           <div className="flex flex-col sm:hidden divide-y divide-surface-100">
             {bom.components.map(c => (
-              <div key={c.id} className="p-4 bg-white hover:bg-surface-50 transition-colors">
+              <div key={c.id} className="p-4 bg-surface-100 hover:bg-surface-50 transition-colors">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="text-sm font-semibold text-surface-800">{c.name}</p>
@@ -120,7 +120,7 @@ export default function BomDetail() {
         </motion.div>
 
         {/* Operations */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
             <Cog size={16} className="text-surface-400" />
             <h2 className="text-base font-semibold text-surface-800">Operations</h2>

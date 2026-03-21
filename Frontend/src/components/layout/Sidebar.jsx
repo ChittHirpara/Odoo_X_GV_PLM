@@ -52,7 +52,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen, collapsed, 
       </AnimatePresence>
 
       <aside
-        className={`fixed left-0 top-0 h-[100dvh] bg-white border-r border-surface-200 z-50 flex flex-col shadow-xl sm:shadow-sm transition-all duration-300 group
+        className={`fixed left-0 top-0 h-[100dvh] bg-surface-100 border-r border-surface-200 z-50 flex flex-col shadow-xl sm:shadow-sm transition-all duration-300 group
           ${mobileMenuOpen ? 'translate-x-0 w-64' : '-translate-x-full sm:translate-x-0'}
           ${!mobileMenuOpen ? (collapsed ? 'sm:w-[72px]' : 'sm:w-[72px] lg:w-64') : ''}
           ${!mobileMenuOpen && !collapsed ? 'hover:w-64' : ''}

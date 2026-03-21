@@ -50,7 +50,7 @@ export default function ImageDiffView({ imageChanges = [], canReview = false, on
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.05 }}
-            className="bg-white rounded-xl border border-surface-200 overflow-hidden"
+            className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden"
           >
             {/* Change Header */}
             <div className="px-5 py-3 bg-surface-50 border-b border-surface-100 flex items-center justify-between">

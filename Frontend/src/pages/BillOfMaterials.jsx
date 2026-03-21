@@ -29,7 +29,7 @@ export default function BillOfMaterials() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search BoMs..."
-          className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
+          className="w-full pl-10 pr-4 py-2 rounded-lg border border-surface-200 bg-surface-100 text-sm focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
         />
       </div>
 
@@ -37,7 +37,7 @@ export default function BillOfMaterials() {
       {filtered.length === 0 ? (
         <EmptyState title="No BoMs found" description="Try adjusting your search." icon={Layers} />
       ) : (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white sm:rounded-xl sm:border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 sm:rounded-xl sm:border border-surface-200 overflow-hidden">
           {/* Desktop/Tablet Table View */}
           <div className="hidden sm:block overflow-x-auto w-full">
             <table className="w-full min-w-[800px]">
@@ -96,7 +96,7 @@ export default function BillOfMaterials() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }}
-                className="bg-white border text-left border-surface-200 rounded-xl p-4 shadow-sm"
+                className="bg-surface-100 border text-left border-surface-200 rounded-xl p-4 shadow-sm"
               >
                 <div className="flex justify-between items-start mb-3">
                   <div>

@@ -55,7 +55,7 @@ export default function Settings() {
       </div>
 
       {/* ECO Stages */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-surface-200 p-6 space-y-5">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6 space-y-5">
         <div className="flex items-center justify-between">
           <h2 className="text-base font-semibold text-surface-800">ECO Workflow Stages</h2>
           <span className="text-xs text-surface-400">{stages.length} stages</span>
@@ -68,7 +68,7 @@ export default function Settings() {
               <div
                 key={`${stage}-${idx}`}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg border transition-colors ${
-                  isFixed ? 'bg-surface-50 border-surface-200' : 'bg-white border-surface-200 hover:border-surface-300'
+                  isFixed ? 'bg-surface-50 border-surface-200' : 'bg-surface-100 border-surface-200 hover:border-surface-300'
                 }`}
               >
                 <GripVertical size={16} className={`flex-shrink-0 ${isFixed ? 'text-surface-200' : 'text-surface-300 cursor-grab'}`} />
@@ -112,7 +112,7 @@ export default function Settings() {
       </motion.div>
 
       {/* Approval Rules */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl border border-surface-200 p-6 space-y-5">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6 space-y-5">
         <h2 className="text-base font-semibold text-surface-800">Approval Rules</h2>
 
         <div className="space-y-2">
@@ -125,7 +125,7 @@ export default function Settings() {
                   rule.enabled ? 'bg-primary-500 justify-end' : 'bg-surface-300 justify-start'
                 }`}
               >
-                <span className="w-4 h-4 rounded-full bg-white shadow-sm mx-1 transition-transform" />
+                <span className="w-4 h-4 rounded-full bg-surface-100 shadow-sm mx-1 transition-transform" />
               </button>
             </div>
           ))}

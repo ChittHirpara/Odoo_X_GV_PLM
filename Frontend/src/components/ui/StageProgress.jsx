@@ -21,7 +21,7 @@ export default function StageProgress({ currentStage }) {
                     ? 'bg-success-500 border-success-500 text-white'
                     : isCurrent
                     ? 'bg-primary-500 border-primary-500 text-white shadow-lg shadow-primary-500/30'
-                    : 'bg-white border-surface-300 text-surface-400'
+                    : 'bg-surface-100 border-surface-300 text-surface-400'
                 }`}
               >
                 {isComplete ? (

@@ -150,7 +150,7 @@ export default function ImageUpload({ images = [], onImagesChange, disabled = fa
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 onClick={() => img.type !== 'application/pdf' && setPreviewImage(img)}
-                className={`group relative bg-white rounded-xl border flex-shrink-0 w-44 sm:w-auto snap-center overflow-hidden cursor-pointer ${
+                className={`group relative bg-surface-100 rounded-xl border flex-shrink-0 w-44 sm:w-auto snap-center overflow-hidden cursor-pointer ${
                   img.reviewStatus === 'approved' ? 'border-success-300 ring-1 ring-success-200' :
                   img.reviewStatus === 'rejected' ? 'border-danger-300 ring-1 ring-danger-200' :
                   'border-surface-200 hover:border-surface-300'

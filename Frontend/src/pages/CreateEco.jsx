@@ -102,7 +102,7 @@ export default function CreateEco() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* ECO Info */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-surface-200 p-6 space-y-5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6 space-y-5">
           <h2 className="text-base font-semibold text-surface-800">ECO Information</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -123,7 +123,7 @@ export default function CreateEco() {
               <select
                 value={form.type}
                 onChange={e => setForm({ ...form, type: e.target.value, bomId: '' })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
               >
                 <option value="Product">Product Change</option>
                 <option value="BoM">BoM Change</option>
@@ -135,7 +135,7 @@ export default function CreateEco() {
               <select
                 value={form.productId}
                 onChange={e => setForm({ ...form, productId: e.target.value, bomId: '' })}
-                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
+                className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
                 required
               >
                 <option value="">Choose a product...</option>
@@ -151,7 +151,7 @@ export default function CreateEco() {
                 <select
                   value={form.bomId}
                   onChange={e => setForm({ ...form, bomId: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
+                  className="w-full px-4 py-2.5 rounded-lg border border-surface-200 text-sm bg-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-200 focus:border-primary-400 transition"
                 >
                   <option value="">Choose a BoM...</option>
                   {productBoms.map(b => (
@@ -215,7 +215,7 @@ export default function CreateEco() {
         </motion.div>
 
         {/* Change Editor */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl border border-surface-200 p-6 space-y-5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6 space-y-5">
           <div className="flex items-center justify-between">
             <h2 className="text-base font-semibold text-surface-800">Change Details</h2>
             <button
@@ -266,7 +266,7 @@ export default function CreateEco() {
                   <select
                     value={change.type}
                     onChange={e => updateChange(idx, 'type', e.target.value)}
-                    className="w-full px-3 py-2 rounded-lg border border-surface-200 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-200 transition"
+                    className="w-full px-3 py-2 rounded-lg border border-surface-200 text-sm bg-surface-100 focus:outline-none focus:ring-2 focus:ring-primary-200 transition"
                   >
                     <option value="modified">Modified</option>
                     <option value="added">Added</option>
@@ -287,7 +287,7 @@ export default function CreateEco() {
         </motion.div>
 
         {/* Image Attachments */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl border border-surface-200 p-6 space-y-5">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6 space-y-5">
           <div className="flex items-center gap-2">
             <ImageIcon size={18} className="text-surface-400" />
             <h2 className="text-base font-semibold text-surface-800">Attachments / Images</h2>

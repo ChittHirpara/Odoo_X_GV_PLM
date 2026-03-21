@@ -1,27 +1,27 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary-50: #eff6ff;
-  --color-primary-100: #dbeafe;
-  --color-primary-200: #bfdbfe;
-  --color-primary-300: #93c5fd;
-  --color-primary-400: #60a5fa;
-  --color-primary-500: #3b82f6;
-  --color-primary-600: #2563eb;
-  --color-primary-700: #1d4ed8;
-  --color-primary-800: #1e40af;
-  --color-primary-900: #1e3a8a;
+  --color-primary-50: #f3f6fa;
+  --color-primary-100: #e3ebf4;
+  --color-primary-200: #c1d2e5;
+  --color-primary-300: #8eb0cf;
+  --color-primary-400: #5587b1;
+  --color-primary-500: #336a9b;
+  --color-primary-600: #24527d;
+  --color-primary-700: #1d4367;
+  --color-primary-800: #1a3955;
+  --color-primary-900: #0F2C59;
 
-  --color-surface-50: #f8fafc;
-  --color-surface-100: #f1f5f9;
-  --color-surface-200: #e2e8f0;
-  --color-surface-300: #cbd5e1;
-  --color-surface-400: #94a3b8;
-  --color-surface-500: #64748b;
-  --color-surface-600: #475569;
-  --color-surface-700: #334155;
-  --color-surface-800: #1e293b;
-  --color-surface-900: #0f172a;
+  --color-surface-50: #F8F0E5;
+  --color-surface-100: #EADBC8;
+  --color-surface-200: #DAC0A3;
+  --color-surface-300: #cba380;
+  --color-surface-400: #b6855b;
+  --color-surface-500: #a36b41;
+  --color-surface-600: #8c5335;
+  --color-surface-700: #1a3955;
+  --color-surface-800: #0F2C59;
+  --color-surface-900: #0a1b38;
 
   --color-success-50: #f0fdf4;
   --color-success-100: #dcfce7;
@@ -31,6 +31,28 @@
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
   --color-success-700: #15803d;
+
+  --color-gray-50: #F8F0E5;
+  --color-gray-100: #EADBC8;
+  --color-gray-200: #DAC0A3;
+  --color-gray-300: #cba380;
+  --color-gray-400: #b6855b;
+  --color-gray-500: #a36b41;
+  --color-gray-600: #8c5335;
+  --color-gray-700: #1a3955;
+  --color-gray-800: #0F2C59;
+  --color-gray-900: #0a1b38;
+
+  --color-blue-50: #f3f6fa;
+  --color-blue-100: #e3ebf4;
+  --color-blue-200: #c1d2e5;
+  --color-blue-300: #8eb0cf;
+  --color-blue-400: #5587b1;
+  --color-blue-500: #336a9b;
+  --color-blue-600: #24527d;
+  --color-blue-700: #1d4367;
+  --color-blue-800: #1a3955;
+  --color-blue-900: #0F2C59;
 
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;

@@ -22,7 +22,7 @@ export default function Card({ title, value, subtitle, icon: Icon, color = 'prim
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: delay * 0.1 }}
-      className="bg-white rounded-xl border border-surface-200 p-6 hover:shadow-md transition-shadow duration-300"
+      className="bg-surface-100 rounded-xl border border-surface-200 p-6 hover:shadow-md transition-shadow duration-300"
     >
       <div className="flex items-start justify-between">
         <div>

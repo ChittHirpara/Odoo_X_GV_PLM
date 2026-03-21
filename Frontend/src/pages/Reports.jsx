@@ -34,7 +34,7 @@ export default function Reports() {
               onClick={() => { setActiveTab(tab.id); setExpandedId(null); }}
               className={`flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                 activeTab === tab.id
-                  ? 'bg-white text-surface-800 shadow-sm'
+                  ? 'bg-surface-100 text-surface-800 shadow-sm'
                   : 'text-surface-500 hover:text-surface-700'
               }`}
             >
@@ -47,7 +47,7 @@ export default function Reports() {
 
       {/* ECO History */}
       {activeTab === 'eco' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
           <div className="divide-y divide-surface-100">
             {ecoList.map(eco => (
               <div key={eco.id}>
@@ -96,7 +96,7 @@ export default function Reports() {
       {activeTab === 'products' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           {products.map(product => (
-            <div key={product.id} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+            <div key={product.id} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
               <button
                 onClick={() => setExpandedId(expandedId === product.id ? null : product.id)}
                 className="w-full flex items-center justify-between px-6 py-4 hover:bg-surface-50 transition-colors text-left"
@@ -154,7 +154,7 @@ export default function Reports() {
 
       {/* BoM Changes */}
       {activeTab === 'bom' && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
           <div className="divide-y divide-surface-100">
             {ecoList.filter(e => e.type === 'BoM').map(eco => (
               <div key={eco.id}>

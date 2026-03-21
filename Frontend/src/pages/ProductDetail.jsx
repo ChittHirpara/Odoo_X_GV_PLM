@@ -45,7 +45,7 @@ export default function ProductDetail() {
       </motion.div>
 
       {/* Product Header */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-surface-200 p-6">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
         <div className="flex items-start justify-between mb-6">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -78,7 +78,7 @@ export default function ProductDetail() {
 
       {/* Product Images */}
       {product.images && product.images.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-white rounded-xl border border-surface-200 p-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <ImageIcon size={16} className="text-surface-400" />
             <h2 className="text-base font-semibold text-surface-800">Product Images</h2>
@@ -107,7 +107,7 @@ export default function ProductDetail() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Version History */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
             <GitBranch size={16} className="text-surface-400" />
             <h2 className="text-base font-semibold text-surface-800">Version History</h2>
@@ -144,7 +144,7 @@ export default function ProductDetail() {
         <div className="space-y-6">
           {/* Attached BoM */}
           {bom && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-surface-100 flex items-center justify-between">
                 <h2 className="text-base font-semibold text-surface-800">Attached BoM</h2>
                 <Link to={`/bom/${bom.id}`} className="text-xs text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1">
@@ -164,7 +164,7 @@ export default function ProductDetail() {
 
           {/* Related ECOs */}
           {relatedEcos.length > 0 && (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-surface-100 flex items-center gap-2">
                 <FileText size={16} className="text-surface-400" />
                 <h2 className="text-base font-semibold text-surface-800">Related ECOs</h2>

@@ -67,7 +67,7 @@ export default function EcoDetail() {
       </Link>
 
       {/* ECO Header */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-white rounded-xl border border-surface-200 p-6">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
         <div className="flex items-start justify-between mb-4">
           <div>
             <div className="flex items-center gap-3 mb-2">
@@ -128,21 +128,21 @@ export default function EcoDetail() {
       </motion.div>
 
       {/* Stage Progress */}
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-white rounded-xl border border-surface-200 p-6">
+      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
         <h2 className="text-base font-semibold text-surface-800 mb-6">Approval Workflow</h2>
         <StageProgress currentStage={eco.stage} />
       </motion.div>
 
       {/* Diff View */}
       {eco.changes && eco.changes.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-white rounded-xl border border-surface-200 p-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
           <DiffView changes={eco.changes} />
         </motion.div>
       )}
 
       {/* Image Changes - Diff View */}
       {visibleImageChanges.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-xl border border-surface-200 p-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
           <ImageDiffView
             imageChanges={visibleImageChanges}
             canReview={canApprove && eco.stage === 'Approval'}
@@ -154,7 +154,7 @@ export default function EcoDetail() {
 
       {/* Attached Images Gallery (if no image changes but has attachments) */}
       {visibleImageChanges.length === 0 && attachedImages.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-white rounded-xl border border-surface-200 p-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
           <div className="flex items-center gap-2 mb-4">
             <ImageIcon size={16} className="text-surface-400" />
             <h3 className="text-sm font-semibold text-surface-700 uppercase tracking-wider">Attached Images</h3>
@@ -182,7 +182,7 @@ export default function EcoDetail() {
 
       {/* Action Buttons */}
       {eco.stage !== 'Done' && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-white rounded-xl border border-surface-200 p-6">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="bg-surface-100 rounded-xl border border-surface-200 p-6">
           <h2 className="text-base font-semibold text-surface-800 mb-4">Actions</h2>
 
           {/* Comment Input */}
@@ -265,7 +265,7 @@ export default function EcoDetail() {
                 </button>
                 <button
                   onClick={() => setShowConfirm(null)}
-                  className="px-4 py-2 text-sm font-medium text-surface-600 bg-white border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-surface-600 bg-surface-100 border border-surface-200 rounded-lg hover:bg-surface-50 transition-colors"
                 >
                   Cancel
                 </button>
@@ -277,7 +277,7 @@ export default function EcoDetail() {
 
       {/* Approval Logs */}
       {eco.approvalLogs && eco.approvalLogs.length > 0 && (
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-white rounded-xl border border-surface-200 overflow-hidden">
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} className="bg-surface-100 rounded-xl border border-surface-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-surface-100">
             <h2 className="text-base font-semibold text-surface-800">Approval Log</h2>
           </div>
