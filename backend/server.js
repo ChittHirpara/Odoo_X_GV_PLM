@@ -64,7 +64,7 @@ app.use((err, req, res, next) => {
 module.exports = app;
 
 if (require.main === module) {
-  const PORT = process.env.PORT || 5000;
+  const PORT = process.env.PORT || 3000;
   
   const startServer = async () => {
     try {

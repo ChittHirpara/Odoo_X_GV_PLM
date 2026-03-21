@@ -16,10 +16,35 @@ export function AppProvider({ children }) {
   // ================================//
   const [currentUser, setCurrentUser] = useState(users[0]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [products] = useState(initialProducts);
+  
+  const [products, setProducts] = useState(initialProducts);
   const [bomList, setBomList] = useState(initialBoms);
   const [ecoList, setEcoList] = useState(initialEcos);
   const [notificationList, setNotificationList] = useState(initialNotifications);
+
+  // ==========================================//
+  //  API DATA FETCHING — Backend integration  //
+  // ==========================================//
+  const fetchAllData = useCallback(async (token) => {
+    try {
+      const headers = { 'Authorization': `Bearer ${token}` };
+      const apiBase = 'http://localhost:3000/api';
+      
+      const [prodRes, bomRes, ecoRes, notifRes] = await Promise.all([
+        fetch(`${apiBase}/products`, { headers }),
+        fetch(`${apiBase}/boms`, { headers }),
+        fetch(`${apiBase}/ecos`, { headers }),
+        fetch(`${apiBase}/notifications`, { headers })
+      ]);
+
+      if (prodRes.ok) setProducts((await prodRes.json()).data);
+      if (bomRes.ok) setBomList((await bomRes.json()).data);
+      if (ecoRes.ok) setEcoList((await ecoRes.json()).data);
+      if (notifRes.ok) setNotificationList((await notifRes.json()).data);
+    } catch (err) {
+      console.error('Failed to fetch data from backend', err);
+    }
+  }, []);
 
   // ================================//
   //  ROLE SWITCHER (demo feature)   //
@@ -32,12 +57,34 @@ export function AppProvider({ children }) {
   // ==========================================//
   //  LOGIN / LOGOUT — Auth state              //
   // ==========================================//
-  const login = useCallback((userId) => {
-    switchRole(userId);
-    setIsAuthenticated(true);
-  }, [switchRole]);
+  const login = useCallback(async (userId) => {
+    const user = users.find(u => u.id === userId);
+    if (!user) return;
+    try {
+      const res = await fetch('http://localhost:3000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: user.email, password: 'password123' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('token', data.data.token);
+        switchRole(userId);
+        setIsAuthenticated(true);
+        fetchAllData(data.data.token);
+      } else {
+        alert('Login failed: ' + data.message);
+      }
+    } catch (err) {
+      console.error(err);
+      // Fallback to offline mode for now if server is down
+      switchRole(userId);
+      setIsAuthenticated(true);
+    }
+  }, [switchRole, fetchAllData]);
 
   const logout = useCallback(() => {
+    localStorage.removeItem('token');
     setIsAuthenticated(false);
   }, []);
 
@@ -51,109 +98,110 @@ export function AppProvider({ children }) {
   const canAccessSettings = currentUser.role === ROLES.ADMIN;
   const isReadOnly = currentUser.role === ROLES.OPERATIONS;
 
-  // ================================//
-  //  ADD BOM — Create new BoM       //
-  // ================================//
-  const addBom = useCallback((bom) => {
-    const newBom = {
-      ...bom,
-      id: `bom${Date.now()}`,
-      version: '1',
-      status: 'Draft',
-      createdAt: new Date().toISOString().slice(0, 10),
-      components: (bom.components || []).map(c => ({
-        ...c,
-        unit: c.unit || 'pcs',
-        cost: c.cost || 0
-      })),
-      operations: bom.operations || []
-    };
-    setBomList(prev => [newBom, ...prev]);
-    return newBom;
+  const authHeaders = () => ({
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${localStorage.getItem('token')}`
+  });
+
+  const addBom = useCallback(async (bom) => {
+    try {
+      const res = await fetch('http://localhost:3000/api/boms', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(bom)
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setBomList(prev => [data, ...prev]);
+        return data;
+      }
+    } catch (err) { console.error('Error adding BOM', err); }
   }, []);
 
-  // ==========================================//
-  //  ADD ECO — Create new ECO (auto-numbers)  //
-  // ==========================================//
-  const addEco = useCallback((eco) => {
-    const newEco = {
-      ...eco,
-      id: `eco${Date.now()}`,
-      ecoNumber: `ECO-2026-${String(ecoList.length + 1).padStart(3, '0')}`,
-      stage: 'New',
-      createdBy: currentUser.id,
-      createdByName: currentUser.name,
-      createdAt: new Date().toISOString().slice(0, 10),
-      approvalLogs: [],
-      attachedImages: eco.attachedImages || [],
-      imageChanges: eco.imageChanges || [],
-    };
-    setEcoList(prev => [newEco, ...prev]);
-    return newEco;
-  }, [currentUser, ecoList.length]);
+  const addEco = useCallback(async (eco) => {
+    try {
+      const payload = { ...eco, createdBy: currentUser.id };
+      const res = await fetch('http://localhost:3000/api/ecos', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setEcoList(prev => [data, ...prev]);
+        return data;
+      }
+    } catch (err) { console.error('Error adding ECO', err); }
+  }, [currentUser.id]);
 
-  // ===============================================//
-  //  UPDATE ECO STAGE — Used for BOTH              //
-  //  Submit for Approval AND Approve                //
-  // ===============================================//
-  const updateEcoStage = useCallback((ecoId, newStage, comment = '') => {
-    setEcoList(prev => prev.map(eco => {
-      if (eco.id !== ecoId) return eco;
-      const logEntry = {
-        user: currentUser.name,
-        action: newStage === 'Approval' ? 'Submitted for Approval' : newStage === 'Done' ? 'Approved' : `Moved to ${newStage}`,
-        timestamp: new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        comment,
-      };
-      return { ...eco, stage: newStage, approvalLogs: [...eco.approvalLogs, logEntry] };
-    }));
-  }, [currentUser]);
-
-  // ==========================================//
-  //  REJECT ECO — Resets stage back to 'New'  //
-  // ==========================================//
-  const rejectEco = useCallback((ecoId, comment = '') => {
-    setEcoList(prev => prev.map(eco => {
-      if (eco.id !== ecoId) return eco;
-      const logEntry = {
-        user: currentUser.name,
-        action: 'Rejected',
-        timestamp: new Date().toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
-        comment,
-      };
-      return { ...eco, stage: 'New', approvalLogs: [...eco.approvalLogs, logEntry] };
-    }));
-  }, [currentUser]);
-
-  const updateEcoImages = useCallback((ecoId, images) => {
-    setEcoList(prev => prev.map(eco =>
-      eco.id === ecoId ? { ...eco, attachedImages: images } : eco
-    ));
+  const updateEcoStage = useCallback(async (ecoId, newStage, comment = '') => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/ecos/${ecoId}/stage`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ stage: newStage, comment })
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setEcoList(prev => prev.map(eco => eco.id === ecoId ? data : eco));
+      }
+    } catch (err) { console.error('Error updating ECO stage', err); }
   }, []);
 
-  // ==========================================//
-  //  REVIEW IMAGE — Approve/Reject images     //
-  // ==========================================//
-  const reviewEcoImage = useCallback((ecoId, imageChangeId, status, comment) => {
-    setEcoList(prev => prev.map(eco => {
-      if (eco.id !== ecoId) return eco;
-      const updatedChanges = (eco.imageChanges || []).map(ic =>
-        (ic.id === imageChangeId) ? { ...ic, reviewStatus: status, reviewComment: comment || '', reviewedBy: currentUser.name } : ic
-      );
-      return { ...eco, imageChanges: updatedChanges };
-    }));
-  }, [currentUser]);
-
-  // ==========================================//
-  //  NOTIFICATIONS — Mark as read             //
-  // ==========================================//
-  const markNotificationRead = useCallback((notifId) => {
-    setNotificationList(prev => prev.map(n => n.id === notifId ? { ...n, read: true } : n));
+  const rejectEco = useCallback(async (ecoId, comment = '') => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/ecos/${ecoId}/reject`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ comment })
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setEcoList(prev => prev.map(eco => eco.id === ecoId ? data : eco));
+      }
+    } catch (err) { console.error('Error rejecting ECO', err); }
   }, []);
 
-  // ==========================================//
-  //  CONTEXT VALUE — Everything exported      //
-  // ==========================================//
+  const updateEcoImages = useCallback(async (ecoId, images) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/ecos/${ecoId}/images`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ attachedImages: images, imageChanges: [] }) // imageChanges syncs based on existing architecture
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setEcoList(prev => prev.map(eco => eco.id === ecoId ? data : eco));
+      }
+    } catch (err) { console.error('Error updating ECO images', err); }
+  }, []);
+
+  const reviewEcoImage = useCallback(async (ecoId, imageChangeId, status, comment) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/ecos/${ecoId}/images/review/${imageChangeId}`, {
+        method: 'PATCH',
+        headers: authHeaders(),
+        body: JSON.stringify({ status, comment })
+      });
+      if (res.ok) {
+        const { data } = await res.json();
+        setEcoList(prev => prev.map(eco => eco.id === ecoId ? data : eco));
+      }
+    } catch (err) { console.error('Error reviewing ECO image', err); }
+  }, []);
+
+  const markNotificationRead = useCallback(async (notifId) => {
+    try {
+      const res = await fetch(`http://localhost:3000/api/notifications/${notifId}/read`, {
+        method: 'PATCH',
+        headers: authHeaders()
+      });
+      if (res.ok) {
+        setNotificationList(prev => prev.map(n => n.id === notifId ? { ...n, read: true } : n));
+      }
+    } catch (err) { console.error('Error marking notification read', err); }
+  }, []);
+
   const value = {
     isAuthenticated,
     login,
@@ -176,18 +224,18 @@ export function AppProvider({ children }) {
     canEditDraft,
     canApprove,
     canAccessSettings,
-    isReadOnly,
+    isReadOnly
   };
 
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  return (
+    <AppContext.Provider value={value}>
+      {children}
+    </AppContext.Provider>
+  );
 }
 
-// ==========================================//
-//  useApp() — Hook to access this context   //
-//  Call this in any component to get data   //
-// ==========================================//
-export function useApp() {
-  const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useApp must be used inside AppProvider');
-  return ctx;
+export const useApp = () => {
+  const context = useContext(AppContext);
+  if (!context) throw new Error('useApp must be used within an AppProvider');
+  return context;
 }
