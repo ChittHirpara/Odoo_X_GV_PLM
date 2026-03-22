@@ -8,9 +8,17 @@ const router = express.Router();
 router.get('/', authMiddleware, async (req, res) => {
   try {
     const result = await req.db('SELECT * FROM approval_rules ORDER BY created_at DESC');
-    res.json({ success: true, data: result.rows });
+    res.json({ success: true, data: result.rows || [] });
   } catch (error) {
-    res.status(500).json({ success: false, message: 'Failed to fetch approval rules' });
+    console.error('[APPROVAL RULES FETCH ERROR]', {
+      message: error.message,
+      pgCode: error.code
+    });
+    res.status(500).json({ 
+      success: false, 
+      message: 'Failed to fetch approval rules',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined 
+    });
   }
 });
 
