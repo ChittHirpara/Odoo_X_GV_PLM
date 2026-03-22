@@ -294,7 +294,11 @@
     "password": "પાસવર્ડ",
     "signing_in": "સાઇન ઇન થઈ રહ્યું છે...",
     "welcome_back": "સ્વાગત છે",
-    "login_subtitle": "તમારા PLM Flow ખાતામાં સાઇન ઇન કરો"
+    "login_subtitle": "તમારા PLM ખાતામાં સાઇન ઇન કરો",
+    "forgot": "પાસવર્ડ ભૂલી ગયા છો?",
+    "demo_accounts": "ડેમો એકાઉન્ટ્સ",
+    "not_member": "સભ્ય નથી?",
+    "contact_admin": "એડમિનનો સંપર્ક કરો"
   },
   "products": {
     "title": "ઉત્પાદન",

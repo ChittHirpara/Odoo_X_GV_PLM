@@ -294,7 +294,11 @@
     "password": "Password",
     "signing_in": "Signing in...",
     "welcome_back": "Welcome back",
-    "login_subtitle": "Sign in to your PLM Flow account"
+    "login_subtitle": "Sign in to your PLM account",
+    "forgot": "Forgot password?",
+    "demo_accounts": "Demo Accounts",
+    "not_member": "Not a member?",
+    "contact_admin": "Contact Admin"
   },
   "products": {
     "title": "Products",

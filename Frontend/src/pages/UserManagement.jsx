@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Edit, ChevronLeft, ChevronRight, X, UserPlus, Mail, Shield, CheckCircle, XCircle } from 'lucide-react';
+import { Plus, Search, Filter, Edit, ChevronLeft, ChevronRight, X, UserPlus, Mail, Shield, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { API_BASE_URL } from '../config/api';
 import { ROLES } from '../data/mockData';
 import { sendWelcomeEmail } from '../services/emailService';

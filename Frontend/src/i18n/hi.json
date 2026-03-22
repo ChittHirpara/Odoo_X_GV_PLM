@@ -294,7 +294,11 @@
     "password": "पासवर्ड",
     "signing_in": "साइन इन हो रहा है...",
     "welcome_back": "वापसी पर स्वागत है",
-    "login_subtitle": "अपने PLM Flow खाते में साइन इन करें"
+    "login_subtitle": "अपने PLM खाते में साइन इन करें",
+    "forgot": "पासवर्ड भूल गए?",
+    "demo_accounts": "डेमो खाते",
+    "not_member": "सदस्य नहीं हैं?",
+    "contact_admin": "व्यवस्थापक से संपर्क करें"
   },
   "products": {
     "title": "उत्पाद",
