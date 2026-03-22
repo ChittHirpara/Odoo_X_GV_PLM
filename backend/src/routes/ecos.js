@@ -203,13 +203,14 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
     }
 
     // 4. Update ECO Stage
+    console.log('[DEBUG] Updating stage for ECO:', req.params.id, 'to', stage);
     await req.db(
       'UPDATE ecos SET stage = $1, updated_at = NOW() WHERE id = $2',
       [stage, req.params.id]
     );
 
     // 5. Insert Approval Log
-    // Using user_name to match current schema, but checking if it fails
+    console.log('[DEBUG] Inserting approval log for ECO:', req.params.id);
     await req.db(
       `INSERT INTO approval_logs (eco_id, user_name, action, comment, created_at)
        VALUES ($1, $2, $3, $4, NOW())`,
@@ -219,11 +220,10 @@ router.patch('/:id/stage', authMiddleware, roleMiddleware(['Admin', 'Engineering
     res.json({ 
       success: true, 
       message: `ECO status updated to ${stage}`,
-      data: { ...eco, stage } // Return updated object for frontend state sync
+      data: { ...eco, stage }
     });
   } catch (error) {
-    console.error('[ECO STAGE PROB]', error.message);
-    if (error.stack) console.error(error.stack);
+    console.error('[ECO STAGE PROB] FAILED AT STAGE UPDATE:', error.message);
     res.status(500).json({ success: false, message: 'Failed to update ECO stage: ' + error.message });
   }
 });
